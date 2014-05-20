@@ -20,13 +20,11 @@ final class RetryImpl extends Retry {
 
 trait RetryStrategy {
   def shouldRetry(): Boolean
-
   def update(): RetryStrategy
 }
 
 case class NumberOfRetriesStrategy(numberOfTimes: Int) extends RetryStrategy {
   override def shouldRetry(): Boolean = numberOfTimes > 0
-
   override def update(): RetryStrategy = NumberOfRetriesStrategy(numberOfTimes - 1)
 }
 
