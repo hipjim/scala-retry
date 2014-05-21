@@ -1,3 +1,4 @@
+import java.util.concurrent.TimeUnit
 import scala.annotation.implicitNotFound
 import scala.util.{Success, Try}
 
@@ -26,20 +27,21 @@ package object utils extends Retry {
       case f => f
     }
 
-  def noWaitRetry(limitOfRetries:Int) =
+  def noWaitRetry(limitOfRetries: Int) =
     new MaxNumberOfRetriesStrategy(limitOfRetries)
 
-  def fixedWaitRetry(waitTimeMillis:Long, limitOfRetries:Int) =
-    new FixedWaitRetryStrategy(waitTimeMillis, limitOfRetries)
+  def fixedWaitRetry(waitTime: Long, timeUnit: TimeUnit, limitOfRetries: Int) =
+    new FixedWaitRetryStrategy(timeUnit.toMillis(waitTime), limitOfRetries)
 
-  def randomWaitRetry(minimumWaitTimeMillis:Long, maximumWaitTimeMillis:Long, limitOfRetries:Int) =
-    new RandomWaitRetryStrategy(minimumWaitTimeMillis, maximumWaitTimeMillis, limitOfRetries)
+  def randomWaitRetry(minimumWaitTime: Long, maximumWaitTime: Long, timeUnit: TimeUnit, limitOfRetries: Int) =
+    new RandomWaitRetryStrategy(timeUnit.toMillis(minimumWaitTime), timeUnit.toMillis(maximumWaitTime), limitOfRetries)
 }
 
 object runner extends App {
+
   import utils._
 
-  implicit val retryStrategy = noWaitRetry(limitOfRetries = 10)
+  implicit val retryStrategy = fixedWaitRetry(10, TimeUnit.SECONDS, limitOfRetries = 10)
 
   println(retry(1 / 0))
   println(retry(2 / 1))
