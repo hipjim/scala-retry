@@ -32,9 +32,6 @@ object runner extends App {
 
   implicit val retryStrategy = new MaxNumberOfRetriesStrategy(10)
 
-  retry(1 / 0).recover {
-    case e => 
-  }
   println(retry(1 / 0))
   println(retry(2 / 1))
 }
