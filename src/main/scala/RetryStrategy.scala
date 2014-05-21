@@ -8,16 +8,16 @@ trait RetryStrategy {
   def update(): RetryStrategy
 }
 
-case class MaxNumberOfRetriesStrategy(numberOfTimes: Int) extends RetryStrategy {
+case class MaxNumberOfRetriesStrategy(maxRetries: Int) extends RetryStrategy {
   override def shouldRetry(): Boolean =
-    numberOfTimes > 0
+    maxRetries > 0
 
   override def update(): RetryStrategy =
-    MaxNumberOfRetriesStrategy(numberOfTimes - 1)
+    this.copy(maxRetries = (maxRetries -1))
 }
 
-case class FixedWaitRetryStrategy(override val numberOfTimes: Int, millis: Long)
-  extends MaxNumberOfRetriesStrategy(numberOfTimes) {
+case class FixedWaitRetryStrategy(override val maxRetries: Int, millis: Long)
+  extends MaxNumberOfRetriesStrategy(maxRetries) {
       
   override def update(): RetryStrategy = {
     try {
@@ -28,12 +28,12 @@ case class FixedWaitRetryStrategy(override val numberOfTimes: Int, millis: Long)
         throw new RuntimeException("retry failed")
     }
 
-    FixedWaitRetryStrategy(numberOfTimes - 1, millis)
+    FixedWaitRetryStrategy(maxRetries - 1, millis)
   }
 }
 
-case class RandomWaitRetryStrategy(override val numberOfTimes: Int, maximumTime: Long)
-  extends MaxNumberOfRetriesStrategy(numberOfTimes) {
+case class RandomWaitRetryStrategy(override val maxRetries: Int, maximumTime: Long)
+  extends MaxNumberOfRetriesStrategy(maxRetries) {
 
   private[this] final val random: Random = new Random()
 
@@ -48,6 +48,6 @@ case class RandomWaitRetryStrategy(override val numberOfTimes: Int, maximumTime:
         throw new RuntimeException("retry failed")
     }
 
-    FixedWaitRetryStrategy(numberOfTimes - 1, maximumTime)
+    FixedWaitRetryStrategy(maxRetries - 1, maximumTime)
   }
 }
