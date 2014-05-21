@@ -1,24 +1,38 @@
 import java.util.Random
 
 /**
- * Created by cristi on 5/20/14.
+ * Interface defining a retry strategy
  */
 trait RetryStrategy {
+  /**
+   * Informs the caller if the retry should be performed
+   * @return true if the operation should be retries
+   */
   def shouldRetry(): Boolean
+
+  /**
+   * Returns the new retry strategy state
+   * @return the new retry strategy
+   */
   def update(): RetryStrategy
 }
 
-case class MaxNumberOfRetriesStrategy(maxRetries: Int) extends RetryStrategy {
+/**
+ * Simplest retry strategy that performs retry
+ * @param maxRetries the maximum number of retries
+ */
+class MaxNumberOfRetriesStrategy(val maxRetries: Int)
+  extends RetryStrategy {
   override def shouldRetry(): Boolean =
     maxRetries > 0
 
   override def update(): RetryStrategy =
-    this.copy(maxRetries = (maxRetries -1))
+    new MaxNumberOfRetriesStrategy(maxRetries = (maxRetries - 1))
 }
 
-case class FixedWaitRetryStrategy(override val maxRetries: Int, millis: Long)
+class FixedWaitRetryStrategy(override val maxRetries: Int, val millis: Long)
   extends MaxNumberOfRetriesStrategy(maxRetries) {
-      
+
   override def update(): RetryStrategy = {
     try {
       Thread.sleep(millis)
@@ -28,17 +42,17 @@ case class FixedWaitRetryStrategy(override val maxRetries: Int, millis: Long)
         throw new RuntimeException("retry failed")
     }
 
-    FixedWaitRetryStrategy(maxRetries - 1, millis)
+    new FixedWaitRetryStrategy(maxRetries - 1, millis)
   }
 }
 
-case class RandomWaitRetryStrategy(override val maxRetries: Int, maximumTime: Long)
+case class RandomWaitRetryStrategy(override val maxRetries: Int, val minimumWaitTime:Long, val maximumWaitTime: Long)
   extends MaxNumberOfRetriesStrategy(maxRetries) {
 
   private[this] final val random: Random = new Random()
 
   override def update(): RetryStrategy = {
-    val t: Long = math.abs(random.nextLong) % maximumTime
+    val t: Long = math.abs(random.nextLong) % (maximumWaitTime - minimumWaitTime)
 
     try {
       Thread.sleep(t)
@@ -48,6 +62,6 @@ case class RandomWaitRetryStrategy(override val maxRetries: Int, maximumTime: Lo
         throw new RuntimeException("retry failed")
     }
 
-    FixedWaitRetryStrategy(maxRetries - 1, maximumTime)
+    new RandomWaitRetryStrategy(maxRetries - 1, minimumWaitTime, maximumWaitTime)
   }
 }
