@@ -30,7 +30,7 @@ class MaxNumberOfRetriesStrategy(val maxRetries: Int)
     new MaxNumberOfRetriesStrategy(maxRetries = (maxRetries - 1))
 }
 
-class FixedWaitRetryStrategy(override val maxRetries: Int, val millis: Long)
+class FixedWaitRetryStrategy(val millis: Long, override val maxRetries: Int)
   extends MaxNumberOfRetriesStrategy(maxRetries) {
 
   override def update(): RetryStrategy = {
@@ -43,13 +43,13 @@ class FixedWaitRetryStrategy(override val maxRetries: Int, val millis: Long)
     }
 
     new FixedWaitRetryStrategy(
-      maxRetries - 1,
-      millis
+      millis,
+      maxRetries - 1
     )
   }
 }
 
-class RandomWaitRetryStrategy(override val maxRetries: Int, val minimumWaitTime: Long, val maximumWaitTime: Long)
+class RandomWaitRetryStrategy(val minimumWaitTime: Long, val maximumWaitTime: Long, override val maxRetries: Int)
   extends MaxNumberOfRetriesStrategy(maxRetries) {
 
   private[this] final val random: Random = new Random()
@@ -66,9 +66,9 @@ class RandomWaitRetryStrategy(override val maxRetries: Int, val minimumWaitTime:
     }
 
     new RandomWaitRetryStrategy(
-      maxRetries - 1,
       minimumWaitTime,
-      maximumWaitTime
+      maximumWaitTime,
+      maxRetries - 1
     )
   }
 }

@@ -25,12 +25,21 @@ package object utils extends Retry {
       case _ if strategy.shouldRetry() => retry(fn)(strategy.update())
       case f => f
     }
+
+  def noWaitRetry(limitOfRetries:Int) =
+    new MaxNumberOfRetriesStrategy(limitOfRetries)
+
+  def fixedWaitRetry(waitTimeMillis:Long, limitOfRetries:Int) =
+    new FixedWaitRetryStrategy(waitTimeMillis, limitOfRetries)
+
+  def randomWaitRetry(minimumWaitTimeMillis:Long, maximumWaitTimeMillis:Long, limitOfRetries:Int) =
+    new RandomWaitRetryStrategy(minimumWaitTimeMillis, maximumWaitTimeMillis, limitOfRetries)
 }
 
 object runner extends App {
-  import utils.retry
+  import utils._
 
-  implicit val retryStrategy = new MaxNumberOfRetriesStrategy(10)
+  implicit val retryStrategy = noWaitRetry(limitOfRetries = 10)
 
   println(retry(1 / 0))
   println(retry(2 / 1))
