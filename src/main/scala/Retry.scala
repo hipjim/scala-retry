@@ -100,24 +100,3 @@ object Retry {
     new RandomWaitRetryStrategy(minimumWaitTime.toMillis, maximumWaitTime.toMillis, limitOfRetries)
 }
 
-object runner extends App {
-
-  import scala.concurrent.duration._
-  import Retry._
-
-  implicit val retryStrategy =
-    fixedWaitRetry(1.seconds, limitOfRetries = 3)
-
-  val r = Retry(1 / 1) match {
-    case Success(x) => println(x)
-    case Failure(t) => println(t)
-  }
-
-  val recover = Retry.apply(1 / 0) recover {
-    case NonFatal(t) => Int.MaxValue
-  }
-
-  println(recover)
-}
-
-
