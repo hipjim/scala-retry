@@ -3,12 +3,14 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
- * The `Retry` type represents a computation that is retrying itself in case of an exception given a retry strategy.
- * The result may be a successful consisting of the computation result or a failure that
+ * The `Retry` type represents a computation that is retrying itself in case of an exception. It uses a `RetryStrategy`
+ * as a policy for the retry operation.
+ *
+ * The result may be a successful consisting of the computation result value or a failure that
  * is wrapping the underlying exception. The type is similar to the scala [[scala.util.Try]] type.
  *
  * Example:
- * {{{
+ *{{{
  * import scala.concurrent.duration._
  * import Retry._
  *
