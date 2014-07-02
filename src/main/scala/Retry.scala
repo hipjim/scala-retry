@@ -1,4 +1,3 @@
-import java.util.concurrent.TimeUnit
 import scala.annotation.implicitNotFound
 import scala.concurrent.duration.FiniteDuration
 import scala.util.{Success, Try}
@@ -41,7 +40,8 @@ package object retry extends Retry {
 object runner extends App {
 
   import retry._
-  import scala.concurrent.duration._
+
+import scala.concurrent.duration._
 
   implicit val retryStrategy = fixedWaitRetry(10.seconds, limitOfRetries = 10)
 
