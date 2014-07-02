@@ -55,6 +55,11 @@ sealed trait Retry[+T] {
    * Applies the given function `f` if this is a `Failure`, otherwise returns this if this is a `Success`.
    */
   def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X]
+
+  /**
+   * Transforms the `Retry` value by applying a transformation function to its underlying value
+   */
+  def transform[X](f: T => X): X
 }
 
 final case class Success[+T](value: T) extends Retry[T] {
@@ -63,6 +68,7 @@ final case class Success[+T](value: T) extends Retry[T] {
   override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = this
   override def get: T = value
   override def foreach[X](f: (T) => X): Unit = f(value)
+  override def transform[X](f: (T) => X): X = f(value)
 }
 
 final case class Failure[+T](val exception: Throwable) extends Retry[T] {
@@ -79,6 +85,7 @@ final case class Failure[+T](val exception: Throwable) extends Retry[T] {
   }
   override def get: T = throw exception
   override def foreach[X](f: (T) => X): Unit = ()
+  override def transform[X](f: (T) => X): X = throw exception
 }
 
 
