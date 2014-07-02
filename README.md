@@ -4,7 +4,7 @@ scala-retry
 Simple retry mechanism for arbitrary function calls in scala.
 
 ```scala
-import utils._
+import retry._
 implicit val retryStrategy =
    fixedWaitRetry(10, TimeUnit.SECONDS, limitOfRetries = 10)
 
