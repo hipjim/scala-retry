@@ -1,36 +1,64 @@
-import scala.annotation.implicitNotFound
 import scala.concurrent.duration.FiniteDuration
-import scala.util.{Success, Try}
+import scala.util.Try
+import scala.util.control.NonFatal
 
 /**
  * Retry interface
  */
-trait Retry {
-  /**
-   * The retry method takes a function and a {@see RetryStrategy}.
-   *
-   * @param fn the function call
-   * @param strategy the retry strategy
-   * @tparam T the response type
-   * @return a Try wrapping the function call result
-   */
-  def retry[T](fn: => T)(implicit strategy: RetryStrategy): Try[T]
+sealed trait Retry[+T] {
+  def isFailure: Boolean
+
+  def isSuccess: Boolean
+
+  def get: T
+
+  def getOrElse[U >: T](default: => U): U =
+    if (isSuccess) get else default
+
+  def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X]
 }
 
-package object retry extends Retry {
+final case class Success[+T](value: T) extends Retry[T] {
+  override def isFailure: Boolean = false
 
-  @implicitNotFound("no implicit retry strategy found")
-  override def retry[T](fn: => T)(implicit strategy: RetryStrategy): Try[T] =
+  override def isSuccess: Boolean = true
+
+  override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = this
+
+  override def get: T = value
+}
+
+final case class Failure[+T](val exception: Throwable) extends Retry[T] {
+  override def isFailure: Boolean = true
+
+  override def isSuccess: Boolean = false
+
+  override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = {
+    try {
+      if (f.isDefinedAt(exception)) {
+        Success(f(exception))
+      } else this
+    } catch {
+      case NonFatal(e) => Failure(e)
+    }
+  }
+
+  override def get: T = throw exception
+}
+
+
+object Retry {
+  def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
-      case x: Success[T] => x
-      case _ if strategy.shouldRetry() => retry(fn)(strategy.update())
-      case f => f
+      case x: scala.util.Success[T] => Success(x.value)
+      case _ if strategy.shouldRetry() => apply(fn)(strategy.update())
+      case f: scala.util.Failure[T] => Failure(f.exception)
     }
 
   def noWaitRetry(limitOfRetries: Int) =
     new MaxNumberOfRetriesStrategy(limitOfRetries)
 
-  def fixedWaitRetry(duration:FiniteDuration, limitOfRetries: Int) =
+  def fixedWaitRetry(duration: FiniteDuration, limitOfRetries: Int) =
     new FixedWaitRetryStrategy(duration.toMillis, limitOfRetries)
 
   def randomWaitRetry(minimumWaitTime: FiniteDuration, maximumWaitTime: FiniteDuration, limitOfRetries: Int) =
@@ -39,14 +67,16 @@ package object retry extends Retry {
 
 object runner extends App {
 
-  import retry._
+  import Retry._
 
 import scala.concurrent.duration._
 
-  implicit val retryStrategy = fixedWaitRetry(10.seconds, limitOfRetries = 10)
+  implicit val retryStrategy = fixedWaitRetry(1.seconds, limitOfRetries = 3)
 
-  println(retry(1 / 0))
-  println(retry(2 / 1))
+  val r = Retry(1 / 0) match {
+    case Success(x) => println(x)
+    case Failure(t) => println(t)
+  }
 }
 
 
