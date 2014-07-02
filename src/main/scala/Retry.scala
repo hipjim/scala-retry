@@ -113,12 +113,11 @@ object runner extends App {
     case Failure(t) => println(t)
   }
 
-  val recover = Retry(1 / 0) recover {
+  val recover = Retry.apply(1 / 0) recover {
     case NonFatal(t) => Int.MaxValue
   }
 
   println(recover)
-
 }
 
 
