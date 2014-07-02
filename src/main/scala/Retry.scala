@@ -7,7 +7,6 @@ import scala.util.control.NonFatal
  */
 sealed trait Retry[+T] {
   def isFailure: Boolean
-
   def isSuccess: Boolean
 
   def get: T
@@ -15,22 +14,23 @@ sealed trait Retry[+T] {
   def getOrElse[U >: T](default: => U): U =
     if (isSuccess) get else default
 
+  def foreach[X](f : T => X)
+
   def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X]
 }
 
 final case class Success[+T](value: T) extends Retry[T] {
   override def isFailure: Boolean = false
-
   override def isSuccess: Boolean = true
 
   override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = this
-
   override def get: T = value
+
+  override def foreach[X](f: (T) => X): Unit = f(value)
 }
 
 final case class Failure[+T](val exception: Throwable) extends Retry[T] {
   override def isFailure: Boolean = true
-
   override def isSuccess: Boolean = false
 
   override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = {
@@ -44,6 +44,8 @@ final case class Failure[+T](val exception: Throwable) extends Retry[T] {
   }
 
   override def get: T = throw exception
+
+  override def foreach[X](f: (T) => X): Unit = ()
 }
 
 
@@ -77,6 +79,7 @@ import scala.concurrent.duration._
     case Success(x) => println(x)
     case Failure(t) => println(t)
   }
+
 }
 
 
