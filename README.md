@@ -13,8 +13,8 @@ implicit val retryStrategy =
 
 // pattern match the result
 val r = Retry(1 / 1) match {
-    case Success(x) => println(x)
-    case Failure(t) => println(t)
+    case Success(x) => x
+    case Failure(t) => log("I got 99 problems but you won't be one", t)
 }
 
 // recover in case of a failure
