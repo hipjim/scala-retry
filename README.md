@@ -9,7 +9,7 @@ import Retry._
 
 // define the retry strategy
 implicit val retryStrategy =
-    fixedWaitRetry(1.seconds, limitOfRetries = 3)
+    fixedWaitRetry(retryInterval = 1.seconds, limitOfRetries = 3)
 
 // pattern match the result
 val r = Retry(1 / 1) match {
@@ -18,7 +18,7 @@ val r = Retry(1 / 1) match {
 }
 
 // recover in case of a failure
-val recover = Retry.apply(1 / 0) recover {
+val recover = Retry(1 / 0) recover {
     case NonFatal(t) => Int.MaxValue
 }
 ```

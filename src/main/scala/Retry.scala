@@ -6,7 +6,7 @@ import scala.util.control.NonFatal
  * The `Retry` type represents a computation that is retrying itself in case of an exception. It uses a `RetryStrategy`
  * as a policy for the retry operation.
  *
- * The result may be a successful consisting of the computation result value or a failure that
+ * The result may be successful consisting of the computation result value or a failure that
  * is wrapping the underlying exception. The type is similar to the scala [[scala.util.Try]] type.
  *
  * Example:
@@ -97,13 +97,13 @@ object Retry {
       case f: scala.util.Failure[T] => Failure(f.exception)
     }
 
-  def noWaitRetry(limitOfRetries: Int) =
-    new MaxNumberOfRetriesStrategy(limitOfRetries)
+  def noWaitRetry(maxRetries: Int) =
+    new MaxNumberOfRetriesStrategy(maxRetries)
 
-  def fixedWaitRetry(duration: FiniteDuration, limitOfRetries: Int) =
-    new FixedWaitRetryStrategy(duration.toMillis, limitOfRetries)
+  def fixedWaitRetry(retryInterval: FiniteDuration, maxRetries: Int) =
+    new FixedWaitRetryStrategy(retryInterval.toMillis, maxRetries)
 
-  def randomWaitRetry(minimumWaitTime: FiniteDuration, maximumWaitTime: FiniteDuration, limitOfRetries: Int) =
-    new RandomWaitRetryStrategy(minimumWaitTime.toMillis, maximumWaitTime.toMillis, limitOfRetries)
+  def randomWaitRetry(minimumWaitTime: FiniteDuration, maximumWaitTime: FiniteDuration, maxRetries: Int) =
+    new RandomWaitRetryStrategy(minimumWaitTime.toMillis, maximumWaitTime.toMillis, maxRetries)
 }
 
