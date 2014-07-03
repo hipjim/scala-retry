@@ -1,8 +1,7 @@
 import org.scalatest._
 
-import scala.util.retry
-import scala.util.retry.{Retry, Success, Failure}
 import scala.concurrent.duration._
+import scala.util.retry.{Failure, Retry, Success}
 
 /**
  * Created by dev on 7/2/14.
