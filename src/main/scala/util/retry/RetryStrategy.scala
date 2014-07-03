@@ -1,3 +1,4 @@
+package scala.util.retry
 import java.util.Random
 
 /**

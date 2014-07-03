@@ -1,3 +1,5 @@
+package scala.util.retry
+
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 import scala.util.control.NonFatal
