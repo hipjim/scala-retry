@@ -16,14 +16,17 @@ class RetrySpec extends FlatSpec with Matchers {
   }
 
   "A `Retry` " should "return `Failure` in case of a failed operation" in {
-    Retry(1 / 0) should equal(Failure(new ArithmeticException("/ by zero")))
+    Retry(1 / 0) match {
+      case Failure(t) => () //OK
+      case Success(_) => fail("Shoudl return failure but it returned success")
+    }
   }
 
   "A `Retry` " should "recover in case of a failure `Failure` " in {
     val result = Retry(1 / 0) recover {
       case _ => -1
     }
-    result should be(Success(1))
+    result should be(Success(-1))
   }
 
   "A `Retry.get` " should " return the computed value" in {
