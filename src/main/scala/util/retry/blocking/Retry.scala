@@ -97,6 +97,7 @@ object Retry {
 
   private[this] val logger = LoggerFactory.getLogger(Retry.getClass)
 
+
   def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
       case x: scala.util.Success[T] =>
