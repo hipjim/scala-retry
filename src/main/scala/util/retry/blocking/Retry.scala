@@ -14,10 +14,10 @@ import scala.util.control.NonFatal
  * Example:
  *{{{
  * import scala.concurrent.duration._
- * import Retry._
+ * import util.retry.blocking.Retry._
  *
  * implicit val retryStrategy =
- *  fixedWaitRetry(1.seconds, limitOfRetries = 3)
+ *  Retry.fixedWaitRetry(1.seconds, limitOfRetries = 3)
  *
  * val r = Retry(1 / 1) match {
  *   case Success(x) => println(x)
