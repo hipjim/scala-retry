@@ -99,13 +99,16 @@ object Retry {
       case f: scala.util.Failure[T] => Failure(f.exception)
     }
 
-  def noWaitRetry(maxRetries: Int) =
+  def noWait(maxRetries: Int) =
     new MaxNumberOfRetriesStrategy(maxRetries)
 
-  def fixedWaitRetry(retryInterval: FiniteDuration, maxRetries: Int) =
+  def fixedWait(retryInterval: FiniteDuration, maxRetries: Int) =
     new FixedWaitRetryStrategy(retryInterval.toMillis, maxRetries)
 
-  def randomWaitRetry(minimumWaitTime: FiniteDuration, maximumWaitTime: FiniteDuration, maxRetries: Int) =
+  def randomWait(minimumWaitTime: FiniteDuration, maximumWaitTime: FiniteDuration, maxRetries: Int) =
     new RandomWaitRetryStrategy(minimumWaitTime.toMillis, maximumWaitTime.toMillis, maxRetries)
+
+  def fibonacciBackOff(retryInterval: FiniteDuration, maxRetries: Int) =
+    new FibonacciBackOffStrategy(retryInterval.toMillis, 1, maxRetries)
 }
 

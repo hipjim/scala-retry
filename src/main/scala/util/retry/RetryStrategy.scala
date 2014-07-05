@@ -30,44 +30,64 @@ class MaxNumberOfRetriesStrategy(val maxRetries: Int)
 }
 
 class FixedWaitRetryStrategy(val millis: Long, override val maxRetries: Int)
-  extends MaxNumberOfRetriesStrategy(maxRetries) {
+  extends MaxNumberOfRetriesStrategy(maxRetries) with Sleep {
 
   override def update(): RetryStrategy = {
-    try {
-      Thread.sleep(millis)
-    } catch {
-      case e: InterruptedException =>
-        Thread.currentThread().interrupt()
-        throw new RuntimeException("retry failed")
-    }
-
-    new FixedWaitRetryStrategy(
-      millis,
-      maxRetries - 1
-    )
+    sleep(millis)
+    new FixedWaitRetryStrategy(millis, maxRetries - 1)
   }
 }
 
 class RandomWaitRetryStrategy(val minimumWaitTime: Long, val maximumWaitTime: Long, override val maxRetries: Int)
-  extends MaxNumberOfRetriesStrategy(maxRetries) {
+  extends MaxNumberOfRetriesStrategy(maxRetries) with Sleep {
 
   private[this] final val random: Random = new Random()
 
   override def update(): RetryStrategy = {
-    val t: Long = math.abs(random.nextLong) % (maximumWaitTime - minimumWaitTime)
-
-    try {
-      Thread.sleep(t)
-    } catch {
-      case e: InterruptedException =>
-        Thread.currentThread().interrupt()
-        throw new RuntimeException("retry failed")
-    }
-
+    val millis: Long = math.abs(random.nextLong) % (maximumWaitTime - minimumWaitTime)
+    sleep(millis)
     new RandomWaitRetryStrategy(
       minimumWaitTime,
       maximumWaitTime,
       maxRetries - 1
     )
+  }
+}
+
+class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxRetries: Int)
+  extends MaxNumberOfRetriesStrategy(maxRetries) with Sleep {
+  def fibb(n: Long) = {
+    n match {
+      case 0L => 0L
+      case 1L => 1L
+      case _ =>
+        var prevPrev: Long = 0L
+        var prev: Long = 1L
+        var result: Long = 0L
+
+        for (i <- 2L to n) {
+          result = prev + prevPrev
+          prevPrev = prev
+          prev = result
+        }
+        result
+    }
+  }
+
+  override def update(): RetryStrategy = {
+    val millis: Long = fibb(step) * waitTime
+    println("next try: " + millis)
+    sleep(millis)
+    new FibonacciBackOffStrategy(waitTime, step + 1, maxRetries - 1)
+  }
+}
+
+trait Sleep {
+  def sleep(millis: Long) = try {
+    Thread.sleep(millis)
+  } catch {
+    case e: InterruptedException =>
+      Thread.currentThread().interrupt()
+      throw e
   }
 }
