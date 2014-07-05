@@ -1,4 +1,4 @@
-package util.retry
+package util.retry.blocking
 
 import java.util.Random
 

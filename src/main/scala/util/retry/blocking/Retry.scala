@@ -1,4 +1,4 @@
-package util.retry
+package util.retry.blocking
 
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
