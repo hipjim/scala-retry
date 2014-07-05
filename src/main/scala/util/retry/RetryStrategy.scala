@@ -1,4 +1,5 @@
-package scala.util.retry
+package util.retry
+
 import java.util.Random
 
 /**
@@ -6,14 +7,12 @@ import java.util.Random
  */
 trait RetryStrategy {
   /**
-   * Informs the caller if the retry should be performed
-   * @return true if the operation should be retries
+   * Returns `true` if the retry should be performed
    */
   def shouldRetry(): Boolean
 
   /**
    * Returns the new retry strategy state
-   * @return the new retry strategy
    */
   def update(): RetryStrategy
 }
@@ -24,11 +23,10 @@ trait RetryStrategy {
  */
 class MaxNumberOfRetriesStrategy(val maxRetries: Int)
   extends RetryStrategy {
-  override def shouldRetry(): Boolean =
-    maxRetries > 0
+  override def shouldRetry(): Boolean = maxRetries > 0
 
   override def update(): RetryStrategy =
-    new MaxNumberOfRetriesStrategy(maxRetries = (maxRetries - 1))
+    new MaxNumberOfRetriesStrategy(maxRetries = maxRetries - 1)
 }
 
 class FixedWaitRetryStrategy(val millis: Long, override val maxRetries: Int)
