@@ -9,7 +9,7 @@ import Retry._
 
 // define the retry strategy
 implicit val retryStrategy =
-    fixedWaitRetry(retryInterval = 1.seconds, limitOfRetries = 3)
+    Retry.fixedWaitRetry(retryInterval = 2.seconds, maxRetries = 5)
 
 // pattern match the result
 val r = Retry(1 / 1) match {

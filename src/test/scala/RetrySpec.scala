@@ -34,4 +34,13 @@ class RetrySpec extends FlatSpec with Matchers {
     result should be(1)
   }
 
+  "A `Retry.get` " should " throw an exception in case of a failure" in {
+    try {
+      Retry(1 / 0).get
+      fail("should not get here")
+    } catch {
+      case e: ArithmeticException => ()
+    }
+  }
+
 }
