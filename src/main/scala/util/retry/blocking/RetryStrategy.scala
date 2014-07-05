@@ -58,8 +58,7 @@ class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxRetri
   extends MaxNumberOfRetriesStrategy(maxRetries) with Sleep {
   def fibb(n: Long) = {
     n match {
-      case 0L => 0L
-      case 1L => 1L
+      case x@(0L | 1L) => x
       case _ =>
         var prevPrev: Long = 0L
         var prev: Long = 1L
@@ -76,7 +75,6 @@ class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxRetri
 
   override def update(): RetryStrategy = {
     val millis: Long = fibb(step) * waitTime
-    println("next try: " + millis)
     sleep(millis)
     new FibonacciBackOffStrategy(waitTime, step + 1, maxRetries - 1)
   }

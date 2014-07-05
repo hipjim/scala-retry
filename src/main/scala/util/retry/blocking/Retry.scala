@@ -1,5 +1,7 @@
 package util.retry.blocking
 
+import org.slf4j.LoggerFactory
+
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 import scala.util.control.NonFatal
@@ -92,11 +94,20 @@ final case class Failure[+T](val exception: Throwable) extends Retry[T] {
 
 
 object Retry {
+
+  private[this] val logger = LoggerFactory.getLogger(Retry.getClass)
+
   def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
-      case x: scala.util.Success[T] => Success(x.value)
-      case _ if strategy.shouldRetry() => apply(fn)(strategy.update())
-      case f: scala.util.Failure[T] => Failure(f.exception)
+      case x: scala.util.Success[T] =>
+        logger.info("Computation succeeded.")
+        Success(x.value)
+      case _ if strategy.shouldRetry() =>
+        logger.info("Computation failed. Retrying...")
+        apply(fn)(strategy.update())
+      case f: scala.util.Failure[T] =>
+        logger.info("Computation failed. Giving up...")
+        Failure(f.exception)
     }
 
   def noWait(maxRetries: Int) =
