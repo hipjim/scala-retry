@@ -97,7 +97,6 @@ object Retry {
 
   private[this] val logger = LoggerFactory.getLogger(Retry.getClass)
 
-
   def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
       case x: scala.util.Success[T] =>
@@ -114,13 +113,13 @@ object Retry {
   def noWait(maxRetries: Int) =
     new MaxNumberOfRetriesStrategy(maxRetries)
 
-  def fixedWait(retryInterval: FiniteDuration, maxRetries: Int) =
-    new FixedWaitRetryStrategy(retryInterval.toMillis, maxRetries)
+  def fixedWait(retryDuration: FiniteDuration, maxRetries: Int) =
+    new FixedWaitRetryStrategy(retryDuration.toMillis, maxRetries)
 
-  def randomWait(minimumWaitTime: FiniteDuration, maximumWaitTime: FiniteDuration, maxRetries: Int) =
-    new RandomWaitRetryStrategy(minimumWaitTime.toMillis, maximumWaitTime.toMillis, maxRetries)
+  def randomWait(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxRetries: Int) =
+    new RandomWaitRetryStrategy(minimumWaitDuration.toMillis, maximumWaitDuration.toMillis, maxRetries)
 
-  def fibonacciBackOff(retryInterval: FiniteDuration, maxRetries: Int) =
-    new FibonacciBackOffStrategy(retryInterval.toMillis, 1, maxRetries)
+  def fibonacciBackOff(initialWaitDuration: FiniteDuration, maxRetries: Int) =
+    new FibonacciBackOffStrategy(initialWaitDuration.toMillis, 1, maxRetries)
 }
 
