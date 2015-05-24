@@ -10,7 +10,7 @@ import util.retry.blocking.Failure
 class RetrySpec extends FlatSpec with Matchers {
 
   implicit val retryStrategy =
-    Retry.fixedWait(retryInterval = 1.seconds, maxRetries = 3)
+    Retry.fixedWait(retryDuration = 1.seconds, maxRetries = 3)
 
   "A `Retry` " should "return `Success` in case of a successful operation" in {
     Retry(1 / 1) should be(Success(1))
