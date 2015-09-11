@@ -2,6 +2,7 @@ package util.retry.blocking
 
 import org.slf4j.LoggerFactory
 
+import scala.annotation.implicitNotFound
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 import scala.util.control.NonFatal
@@ -28,6 +29,11 @@ import scala.util.control.NonFatal
  * }}}
  */
 sealed trait Retry[+T] {
+  /**
+   * Returns `true` if the `Retry` is a `Failure` otherwise it returns `false`.
+   */
+  def flatMap[S](f:T => Retry[S]):Retry[S]
+
   /**
    * Returns `true` if the `Retry` is a `Failure` otherwise it returns `false`.
    */
@@ -73,6 +79,7 @@ final case class Success[+T](value: T) extends Retry[T] {
   override def get: T = value
   override def foreach[X](f: (T) => X): Unit = f(value)
   override def transform[X](f: (T) => X): X = f(value)
+  override def flatMap[S](f: (T) => Retry[S]): Retry[S] = f(value)
 }
 
 final case class Failure[+T](exception: Throwable) extends Retry[T] {
@@ -90,6 +97,7 @@ final case class Failure[+T](exception: Throwable) extends Retry[T] {
   override def get: T = throw exception
   override def foreach[X](f: (T) => X): Unit = ()
   override def transform[X](f: (T) => X): X = throw exception
+  override def flatMap[S](f: (T) => Retry[S]): Retry[S] = Failure(exception)
 }
 
 

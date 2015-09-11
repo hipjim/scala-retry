@@ -5,7 +5,7 @@ import java.util.Random
 /**
  * Interface defining a retry strategy
  */
-trait RetryStrategy {
+sealed trait RetryStrategy {
   /**
    * Returns `true` if the retry should be performed
    */
