@@ -75,7 +75,7 @@ final case class Success[+T](value: T) extends Retry[T] {
   override def transform[X](f: (T) => X): X = f(value)
 }
 
-final case class Failure[+T](val exception: Throwable) extends Retry[T] {
+final case class Failure[+T](exception: Throwable) extends Retry[T] {
   override def isFailure: Boolean = true
   override def isSuccess: Boolean = false
   override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = {
@@ -94,9 +94,6 @@ final case class Failure[+T](val exception: Throwable) extends Retry[T] {
 
 
 object Retry {
-
-  private[this] val logger = LoggerFactory.getLogger(Retry.getClass)
-
   def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
       case x: scala.util.Success[T] =>
@@ -113,13 +110,28 @@ object Retry {
   def noWait(maxRetries: Int) =
     new MaxNumberOfRetriesStrategy(maxRetries)
 
-  def fixedWait(retryDuration: FiniteDuration, maxRetries: Int) =
+  def fixedWait(retryDuration: FiniteDuration,
+                maxRetries: Int) =
     new FixedWaitRetryStrategy(retryDuration.toMillis, maxRetries)
 
-  def randomWait(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxRetries: Int) =
-    new RandomWaitRetryStrategy(minimumWaitDuration.toMillis, maximumWaitDuration.toMillis, maxRetries)
+  def randomWait(minimumWaitDuration: FiniteDuration,
+                 maximumWaitDuration: FiniteDuration,
+                 maxRetries: Int) =
+    new RandomWaitRetryStrategy(
+      minimumWaitDuration.toMillis,
+      maximumWaitDuration.toMillis,
+      maxRetries
+    )
 
-  def fibonacciBackOff(initialWaitDuration: FiniteDuration, maxRetries: Int) =
-    new FibonacciBackOffStrategy(initialWaitDuration.toMillis, 1, maxRetries)
+  def fibonacciBackOff(initialWaitDuration: FiniteDuration,
+                       maxRetries: Int) =
+    new FibonacciBackOffStrategy(
+      initialWaitDuration.toMillis,
+      1,
+      maxRetries
+    )
+
+  private[this] val logger =
+    LoggerFactory.getLogger(Retry.getClass)
 }
 

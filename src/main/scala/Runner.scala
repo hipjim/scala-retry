@@ -6,7 +6,7 @@ import scala.concurrent.duration._
  */
 object Runner extends App {
   import util.retry.blocking.Retry
-  implicit val retryStrategy = Retry.fibonacciBackOff(10.second, 11)
+  implicit val retryStrategy = Retry.fibonacciBackOff(1.second, -1)
 
   val retry = Retry(1 / 0).getOrElse(10)
   println(retry)
