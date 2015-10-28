@@ -1,8 +1,7 @@
 package util.retry.blocking
 
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 
-import scala.annotation.implicitNotFound
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Try
 import scala.util.control.NonFatal
@@ -15,7 +14,7 @@ import scala.util.control.NonFatal
  * is wrapping the underlying exception. The type is similar to the scala [[scala.util.Try]] type.
  *
  * Example:
- *{{{
+ * {{{
  * import scala.concurrent.duration._
  * import util.retry.blocking.Retry._
  *
@@ -32,7 +31,7 @@ sealed trait Retry[+T] {
   /**
    * Returns `true` if the `Retry` is a `Failure` otherwise it returns `false`.
    */
-  def flatMap[S](f:T => Retry[S]):Retry[S]
+  def flatMap[S](f: T => Retry[S]): Retry[S]
 
   /**
    * Returns `true` if the `Retry` is a `Failure` otherwise it returns `false`.
@@ -74,17 +73,25 @@ sealed trait Retry[+T] {
 
 final case class Success[+T](value: T) extends Retry[T] {
   override def isFailure: Boolean = false
+
   override def isSuccess: Boolean = true
+
   override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = this
+
   override def get: T = value
+
   override def foreach[X](f: (T) => X): Unit = f(value)
+
   override def transform[X](f: (T) => X): X = f(value)
+
   override def flatMap[S](f: (T) => Retry[S]): Retry[S] = f(value)
 }
 
 final case class Failure[+T](exception: Throwable) extends Retry[T] {
   override def isFailure: Boolean = true
+
   override def isSuccess: Boolean = false
+
   override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = {
     try {
       if (f.isDefinedAt(exception)) {
@@ -94,14 +101,18 @@ final case class Failure[+T](exception: Throwable) extends Retry[T] {
       case NonFatal(e) => Failure(e)
     }
   }
+
   override def get: T = throw exception
+
   override def foreach[X](f: (T) => X): Unit = ()
+
   override def transform[X](f: (T) => X): X = throw exception
+
   override def flatMap[S](f: (T) => Retry[S]): Retry[S] = Failure(exception)
 }
 
 
-object Retry {
+object Retry extends Slf4JLogger {
   def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
       case x: scala.util.Success[T] =>
@@ -119,12 +130,12 @@ object Retry {
     new MaxNumberOfRetriesStrategy(maxRetries)
 
   def fixedWait(retryDuration: FiniteDuration,
-                maxRetries: Int) =
+    maxRetries: Int) =
     new FixedWaitRetryStrategy(retryDuration.toMillis, maxRetries)
 
   def randomWait(minimumWaitDuration: FiniteDuration,
-                 maximumWaitDuration: FiniteDuration,
-                 maxRetries: Int) =
+    maximumWaitDuration: FiniteDuration,
+    maxRetries: Int) =
     new RandomWaitRetryStrategy(
       minimumWaitDuration.toMillis,
       maximumWaitDuration.toMillis,
@@ -132,14 +143,19 @@ object Retry {
     )
 
   def fibonacciBackOff(initialWaitDuration: FiniteDuration,
-                       maxRetries: Int) =
+    maxRetries: Int) =
     new FibonacciBackOffStrategy(
       initialWaitDuration.toMillis,
       1,
       maxRetries
     )
+}
 
-  private[this] val logger =
-    LoggerFactory.getLogger(Retry.getClass)
+trait WithLogger {
+  def logger: Logger
+}
+
+trait Slf4JLogger extends WithLogger {
+  val logger = LoggerFactory.getLogger(Retry.getClass)
 }
 
