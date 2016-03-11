@@ -1,15 +1,13 @@
 import org.scalatest._
-import util.retry.blocking.{RetryStrategy, Failure, Retry, Success}
-
-import scala.concurrent.duration._
+import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
 
 
 /**
   * Created by dev on 7/2/14.
   */
-class RetrySpec extends FlatSpec with Matchers {
+trait AbstractRetrySpec extends FlatSpec with Matchers {
 
-  implicit val retryStrategy = RetryStrategy.fixedWait(retryDuration = 1.seconds, maxRetries = 3)
+  implicit val retryStrategy: RetryStrategy
 
   "A `Retry` " should "return `Success` in case of a successful operation" in {
     Retry(1 / 1) should be(Success(1))
@@ -47,5 +45,18 @@ class RetrySpec extends FlatSpec with Matchers {
     val result = Retry(1 / 0).getOrElse(1)
     result should be(1)
   }
+}
 
+class NoRetrySpec extends AbstractRetrySpec {
+  val retryStrategy = RetryStrategy.noRetry
+}
+
+class NoWaitRetrySpec extends AbstractRetrySpec {
+  val retryStrategy = RetryStrategy.noWait(3)
+}
+
+import scala.concurrent.duration._
+
+class FixedWaitRetrySpec extends AbstractRetrySpec {
+  val retryStrategy = RetryStrategy.fixedWait(retryDuration = 1.seconds, maxRetries = 2)
 }

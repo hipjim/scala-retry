@@ -24,6 +24,12 @@ sealed trait RetryStrategy {
   *
   * @param maxRetries the maximum number of retries
   */
+object NoRetry
+  extends RetryStrategy {
+  override def shouldRetry(): Boolean = false
+  override def update(): RetryStrategy = ???
+}
+
 class MaxNumberOfRetriesStrategy(val maxRetries: Int)
   extends RetryStrategy {
   override def shouldRetry(): Boolean = maxRetries > 0
@@ -94,27 +100,24 @@ sealed trait Sleep {
 }
 
 object RetryStrategy {
+  val noRetry = NoRetry
+
   def noWait(maxRetries: Int) =
     new MaxNumberOfRetriesStrategy(maxRetries)
 
-  def fixedWait(retryDuration: FiniteDuration,
-                maxRetries: Int) =
+  def fixedWait(retryDuration: FiniteDuration, maxRetries: Int) =
     new FixedWaitRetryStrategy(retryDuration.toMillis, maxRetries)
 
-  def randomWait(minimumWaitDuration: FiniteDuration,
-                 maximumWaitDuration: FiniteDuration,
-                 maxRetries: Int) =
+  def randomWait(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxRetries: Int) =
     new RandomWaitRetryStrategy(
       minimumWaitDuration.toMillis,
       maximumWaitDuration.toMillis,
-      maxRetries
-    )
+      maxRetries)
 
   def fibonacciBackOff(initialWaitDuration: FiniteDuration,
                        maxRetries: Int) =
     new FibonacciBackOffStrategy(
       initialWaitDuration.toMillis,
       1,
-      maxRetries
-    )
+      maxRetries)
 }

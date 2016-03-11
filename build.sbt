@@ -18,7 +18,7 @@ scalacOptions ++= Seq(
   "-Ywarn-nullary-override",
   "-Ywarn-nullary-unit",
   "-Xlog-free-terms"
-),
+)
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test"

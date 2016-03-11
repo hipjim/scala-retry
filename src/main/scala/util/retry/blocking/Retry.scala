@@ -13,7 +13,7 @@ import scala.util.control.NonFatal
   * Example:
   * {{{
   * import scala.concurrent.duration._
-  * import util.retry.blocking.Retry._
+  * import util.retry.blocking.{RetryStrategy, Failure, Retry, Success}
   *
   * implicit val retryStrategy =
   *  Retry.fixedWaitRetry(1.seconds, limitOfRetries = 3)
