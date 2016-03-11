@@ -1,4 +1,4 @@
-scala-retry
+Scala Retry
 ===========
 
 Simple retry mechanism for arbitrary function calls in scala.
