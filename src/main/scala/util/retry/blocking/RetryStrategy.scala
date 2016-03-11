@@ -2,6 +2,8 @@ package util.retry.blocking
 
 import java.util.Random
 
+import scala.concurrent.duration.FiniteDuration
+
 /**
   * Interface defining a retry strategy
   */
@@ -89,4 +91,30 @@ sealed trait Sleep {
       Thread.currentThread().interrupt()
       throw e
   }
+}
+
+object RetryStrategy {
+  def noWait(maxRetries: Int) =
+    new MaxNumberOfRetriesStrategy(maxRetries)
+
+  def fixedWait(retryDuration: FiniteDuration,
+                maxRetries: Int) =
+    new FixedWaitRetryStrategy(retryDuration.toMillis, maxRetries)
+
+  def randomWait(minimumWaitDuration: FiniteDuration,
+                 maximumWaitDuration: FiniteDuration,
+                 maxRetries: Int) =
+    new RandomWaitRetryStrategy(
+      minimumWaitDuration.toMillis,
+      maximumWaitDuration.toMillis,
+      maxRetries
+    )
+
+  def fibonacciBackOff(initialWaitDuration: FiniteDuration,
+                       maxRetries: Int) =
+    new FibonacciBackOffStrategy(
+      initialWaitDuration.toMillis,
+      1,
+      maxRetries
+    )
 }
