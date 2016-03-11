@@ -5,11 +5,11 @@ Simple retry mechanism for arbitrary function calls in scala.
 
 ```scala
 import scala.concurrent.duration._
-import util.retry.blocking.Retry._
+import util.retry.blocking.{RetryStrategy, Failure, Retry, Success}
 
 // define the retry strategy
 implicit val retryStrategy =
-    Retry.fixedWaitRetry(retryInterval = 2.seconds, maxRetries = 5)
+    RetryStrategy.fixedWaitRetry(retryInterval = 2.seconds, maxRetries = 5)
 
 // pattern match the result
 val r = Retry(1 / 1) match {
