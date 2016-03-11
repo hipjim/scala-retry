@@ -1,12 +1,11 @@
 import org.scalatest._
-import util.retry.blocking.{Retry, Success}
+import util.retry.blocking.{Failure, Retry, Success}
 
 import scala.concurrent.duration._
-import util.retry.blocking.Failure
 
 /**
- * Created by dev on 7/2/14.
- */
+  * Created by dev on 7/2/14.
+  */
 class RetrySpec extends FlatSpec with Matchers {
 
   implicit val retryStrategy =
@@ -42,6 +41,11 @@ class RetrySpec extends FlatSpec with Matchers {
     } catch {
       case e: ArithmeticException => ()
     }
+  }
+
+  "A `Retry.getOrElse` " should " should return a value even if an exception is thrown in the execution" in {
+    val result = Retry(1 / 0).getOrElse(1)
+    result should be(1)
   }
 
 }
