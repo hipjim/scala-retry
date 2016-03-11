@@ -21,4 +21,7 @@ val r = Retry(1 / 1) match {
 val recover = Retry(1 / 0) recover {
     case NonFatal(t) => Int.MaxValue
 }
+
+// get or else in case of failure
+val result = Retry(1 / 0).getOrElse(1)
 ```
