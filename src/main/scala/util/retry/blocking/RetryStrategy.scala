@@ -3,24 +3,25 @@ package util.retry.blocking
 import java.util.Random
 
 /**
- * Interface defining a retry strategy
- */
+  * Interface defining a retry strategy
+  */
 sealed trait RetryStrategy {
   /**
-   * Returns `true` if the retry should be performed
-   */
+    * Returns `true` if the retry should be performed
+    */
   def shouldRetry(): Boolean
 
   /**
-   * Returns the new retry strategy state
-   */
+    * Returns the new retry strategy state
+    */
   def update(): RetryStrategy
 }
 
 /**
- * Simplest retry strategy that performs retry
- * @param maxRetries the maximum number of retries
- */
+  * Simplest retry strategy that performs retry
+  *
+  * @param maxRetries the maximum number of retries
+  */
 class MaxNumberOfRetriesStrategy(val maxRetries: Int)
   extends RetryStrategy {
   override def shouldRetry(): Boolean = maxRetries > 0
