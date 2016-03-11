@@ -24,4 +24,11 @@ val recover = Retry(1 / 0) recover {
 
 // get or else in case of failure
 val result = Retry(1 / 0).getOrElse(1)
+
+// can be used in for comprehensions
+val result = for {
+  x <- Retry(1 / 0) // fails with java.lang.ArithmeticException: / by zero
+  y <- Retry(1 / 1) // success
+} yield x + y // result is Failure with java.lang.ArithmeticException: / by zero
+
 ```
