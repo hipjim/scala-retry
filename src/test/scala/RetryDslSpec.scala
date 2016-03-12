@@ -1,5 +1,5 @@
 import org.scalatest.{FlatSpec, Matchers}
-import util.retry.blocking.{Success, Retry, RetryStrategy}
+import util.retry.blocking.{Failure, Success, Retry, RetryStrategy}
 
 import scala.concurrent.duration._
 
@@ -13,11 +13,20 @@ class RetryDslSpec extends FlatSpec with Matchers {
 
   "A `Retry` " should "be used in for comprehensions" in {
     val result = for {
-      x <- Retry(1 / 1) // fails
-      y <- Retry(1 / 1) // success
+      x <- Retry(1 / 1)
+      y <- Retry(1 / 1)
     } yield x + y
 
     result should be(Success(2))
+  }
+
+  "A `Retry` " should "be used in for comprehensions" in {
+    val result = for {
+      x <- Retry("test".toInt) // fails
+      y <- Retry(1 / 1) // fails
+    } yield x + y
+
+    result should be(Failure)
   }
 
 }
