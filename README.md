@@ -1,6 +1,8 @@
 Scala Retry
 ===========
 
+[![Build Status](https://travis-ci.org/hipjim/scala-retry.svg?branch=master)](https://travis-ci.org/hipjim/scala-retry)
+
 Simple retry mechanism for arbitrary function calls in scala.
 
 ```scala
