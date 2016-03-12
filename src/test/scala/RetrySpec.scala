@@ -1,6 +1,7 @@
 import org.scalatest._
 import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
 
+import scala.concurrent.duration._
 
 /**
   * Created by dev on 7/2/14.
@@ -51,12 +52,16 @@ class NoRetrySpec extends AbstractRetrySpec {
   val retryStrategy = RetryStrategy.noRetry
 }
 
-class NoWaitRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.noWait(3)
+class NoBackOffRetrySpec extends AbstractRetrySpec {
+  val retryStrategy = RetryStrategy.noBackOff(maxRetries = 3)
 }
 
-import scala.concurrent.duration._
+class FixedBackOffRetrySpec extends AbstractRetrySpec {
+  val retryStrategy = RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxRetries = 2)
+}
 
-class FixedWaitRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.fixedWait(retryDuration = 1.seconds, maxRetries = 2)
+class FibonacciBackOffRetrySpec extends AbstractRetrySpec {
+  val retryStrategy = RetryStrategy.fibonacciBackOff(
+    initialWaitDuration = 1.seconds,
+    maxRetries = 3)
 }

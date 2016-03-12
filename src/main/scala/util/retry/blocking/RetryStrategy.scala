@@ -102,13 +102,13 @@ sealed trait Sleep {
 object RetryStrategy {
   val noRetry = NoRetry
 
-  def noWait(maxRetries: Int) =
+  def noBackOff(maxRetries: Int) =
     new MaxNumberOfRetriesStrategy(maxRetries)
 
-  def fixedWait(retryDuration: FiniteDuration, maxRetries: Int) =
+  def fixedBackOff(retryDuration: FiniteDuration, maxRetries: Int) =
     new FixedWaitRetryStrategy(retryDuration.toMillis, maxRetries)
 
-  def randomWait(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxRetries: Int) =
+  def randomBackOff(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxRetries: Int) =
     new RandomWaitRetryStrategy(
       minimumWaitDuration.toMillis,
       maximumWaitDuration.toMillis,
