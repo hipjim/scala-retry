@@ -20,13 +20,4 @@ class RetryDslSpec extends FlatSpec with Matchers {
     result should be(Success(2))
   }
 
-  "A `Retry` " should "be used in for comprehensions" in {
-    val result = for {
-      x <- Retry("test".toInt) // fails
-      y <- Retry(1 / 1) // fails
-    } yield x + y
-
-    result should be(Failure)
-  }
-
 }
