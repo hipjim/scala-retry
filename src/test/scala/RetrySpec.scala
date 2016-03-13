@@ -53,15 +53,15 @@ class NoRetrySpec extends AbstractRetrySpec {
 }
 
 class NoBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.noBackOff(maxRetries = 3)
+  val retryStrategy = RetryStrategy.noBackOff(maxAttempts = 3)
 }
 
 class FixedBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxRetries = 2)
+  val retryStrategy = RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
 }
 
 class FibonacciBackOffRetrySpec extends AbstractRetrySpec {
   val retryStrategy = RetryStrategy.fibonacciBackOff(
     initialWaitDuration = 1.seconds,
-    maxRetries = 3)
+    maxAttempts = 3)
 }

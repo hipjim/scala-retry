@@ -27,28 +27,29 @@ sealed trait RetryStrategy {
 object NoRetry
   extends RetryStrategy {
   override def shouldRetry(): Boolean = false
+
   override def update(): RetryStrategy = ???
 }
 
-class MaxNumberOfRetriesStrategy(val maxRetries: Int)
+class MaxNumberOfRetriesStrategy(val maxAttempts: Int)
   extends RetryStrategy {
-  override def shouldRetry(): Boolean = maxRetries > 0
+  override def shouldRetry(): Boolean = maxAttempts > 0
 
   override def update(): RetryStrategy =
-    new MaxNumberOfRetriesStrategy(maxRetries = maxRetries - 1)
+    new MaxNumberOfRetriesStrategy(maxAttempts = maxAttempts - 1)
 }
 
-class FixedWaitRetryStrategy(val millis: Long, override val maxRetries: Int)
-  extends MaxNumberOfRetriesStrategy(maxRetries) with Sleep {
+class FixedWaitRetryStrategy(val millis: Long, override val maxAttempts: Int)
+  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
 
   override def update(): RetryStrategy = {
     sleep(millis)
-    new FixedWaitRetryStrategy(millis, maxRetries - 1)
+    new FixedWaitRetryStrategy(millis, maxAttempts - 1)
   }
 }
 
-class RandomWaitRetryStrategy(val minimumWaitTime: Long, val maximumWaitTime: Long, override val maxRetries: Int)
-  extends MaxNumberOfRetriesStrategy(maxRetries) with Sleep {
+class RandomWaitRetryStrategy(val minimumWaitTime: Long, val maximumWaitTime: Long, override val maxAttempts: Int)
+  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
 
   private[this] final val random: Random = new Random()
 
@@ -58,13 +59,13 @@ class RandomWaitRetryStrategy(val minimumWaitTime: Long, val maximumWaitTime: Lo
     new RandomWaitRetryStrategy(
       minimumWaitTime,
       maximumWaitTime,
-      maxRetries - 1
+      maxAttempts - 1
     )
   }
 }
 
-class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxRetries: Int)
-  extends MaxNumberOfRetriesStrategy(maxRetries) with Sleep {
+class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxAttempts: Int)
+  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
   def fibonacci(n: Long) = {
     n match {
       case x@(0L | 1L) => x
@@ -85,7 +86,7 @@ class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxRetri
   override def update(): RetryStrategy = {
     val millis: Long = fibonacci(step) * waitTime
     sleep(millis)
-    new FibonacciBackOffStrategy(waitTime, step + 1, maxRetries - 1)
+    new FibonacciBackOffStrategy(waitTime, step + 1, maxAttempts - 1)
   }
 }
 
@@ -102,22 +103,21 @@ sealed trait Sleep {
 object RetryStrategy {
   val noRetry = NoRetry
 
-  def noBackOff(maxRetries: Int) =
-    new MaxNumberOfRetriesStrategy(maxRetries)
+  def noBackOff(maxAttempts: Int) =
+    new MaxNumberOfRetriesStrategy(maxAttempts)
 
-  def fixedBackOff(retryDuration: FiniteDuration, maxRetries: Int) =
-    new FixedWaitRetryStrategy(retryDuration.toMillis, maxRetries)
+  def fixedBackOff(retryDuration: FiniteDuration, maxAttempts: Int) =
+    new FixedWaitRetryStrategy(retryDuration.toMillis, maxAttempts)
 
-  def randomBackOff(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxRetries: Int) =
+  def randomBackOff(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxAttempts: Int) =
     new RandomWaitRetryStrategy(
       minimumWaitDuration.toMillis,
       maximumWaitDuration.toMillis,
-      maxRetries)
+      maxAttempts)
 
-  def fibonacciBackOff(initialWaitDuration: FiniteDuration,
-                       maxRetries: Int) =
+  def fibonacciBackOff(initialWaitDuration: FiniteDuration, maxAttempts: Int) =
     new FibonacciBackOffStrategy(
       initialWaitDuration.toMillis,
       1,
-      maxRetries)
+      maxAttempts)
 }

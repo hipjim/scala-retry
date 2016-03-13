@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 class RetryDslSpec extends FlatSpec with Matchers {
 
   implicit val retryStrategy =
-    RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxRetries = 2)
+    RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
 
   "A `Retry` " should "be used in for comprehensions" in {
     val result = for {

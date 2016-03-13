@@ -11,7 +11,7 @@ import util.retry.blocking.{RetryStrategy, Failure, Retry, Success}
 
 // define the retry strategy
 implicit val retryStrategy =
-    RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxRetries = 2)
+    RetryStrategy.fixedBackOff(retryDuration = 1.seconds, retryAttempts = 2)
 
 // pattern match the result
 val r = Retry(1 / 1) match {
