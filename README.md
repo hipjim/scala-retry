@@ -5,6 +5,14 @@ Scala Retry
 
 Simple retry mechanism for arbitrary function calls in scala.
 
+```xml
+<dependency>
+  <groupId>com.github.hipjim</groupId>
+  <artifactId>scala-retry_2.11</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
 ```scala
 import scala.concurrent.duration._
 import util.retry.blocking.{RetryStrategy, Failure, Retry, Success}
