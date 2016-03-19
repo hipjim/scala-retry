@@ -5,6 +5,8 @@ Scala Retry
 
 Simple retry mechanism for arbitrary function calls in scala.
 
+## Maven artifacts
+
 ```xml
 <dependency>
   <groupId>com.github.hipjim</groupId>
@@ -12,6 +14,8 @@ Simple retry mechanism for arbitrary function calls in scala.
   <version>0.1.0-SNAPSHOT</version>
 </dependency>
 ```
+
+## Tutorial
 
 ```scala
 import scala.concurrent.duration._
