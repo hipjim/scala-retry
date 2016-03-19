@@ -6,6 +6,9 @@ Scala Retry
 Simple retry mechanism for arbitrary function calls in scala.
 
 ## Maven artifacts
+```scala
+libraryDependencies += "com.github.hipjim" % "scala-retry_2.11" % "0.1.0"
+```
 
 ```xml
 <dependency>
