@@ -2,6 +2,9 @@ Scala Retry
 ===========
 
 [![Build Status](https://travis-ci.org/hipjim/scala-retry.svg?branch=master)](https://travis-ci.org/hipjim/scala-retry)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala_retry_2.11/badge.(svg|png)?style={style}
+)](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry)
+
 
 Simple retry mechanism for arbitrary function calls in scala.
 
