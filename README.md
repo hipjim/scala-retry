@@ -7,14 +7,14 @@ Simple retry mechanism for arbitrary function calls in scala.
 
 ## Maven artifacts
 ```scala
-libraryDependencies += "com.github.hipjim" % "scala-retry_2.11" % "0.1.0"
+libraryDependencies += "com.github.hipjim" % "scala-retry_2.11" % "0.2.0"
 ```
 
 ```xml
 <dependency>
   <groupId>com.github.hipjim</groupId>
   <artifactId>scala-retry_2.11</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
