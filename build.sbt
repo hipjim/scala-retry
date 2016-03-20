@@ -59,7 +59,7 @@ publishArtifact in Test := false
 pomIncludeRepository := { _ => false }
 
 pomExtra :=
-  <url>https://github.com/monixio/sincron/</url>
+  <url>https://github.com/hipjim/scala-retry</url>
     <licenses>
       <license>
         <name>Apache License, Version 2.0</name>
