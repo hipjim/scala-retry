@@ -3,7 +3,7 @@ Scala Retry
 
 [![Build Status](https://travis-ci.org/hipjim/scala-retry.svg?branch=master)](https://travis-ci.org/hipjim/scala-retry)
 
-Simple retry mechanism for arbitrary function calls in scala.
+######*Simple retry mechanism for arbitrary function calls in scala.*
 
 We live in times where software systems are built by small services that are talking to each other.
 In such systems, transient errors can occur and interfere with the normal program execution flow.
