@@ -7,6 +7,13 @@ Scala Retry
 
 Simple retry mechanism for arbitrary function calls in scala.
 
+We live in times where software systems are built by small services that are talking to each other.
+In such systems, transient errors can occur and interfere with the normal program execution flow.
+Transient faults are temporary abnormal conditions such as offline services, infrastructure faults, or network issues.
+It is common practice to retry transient faults using a retry loop mechanism.
+This minimalistic library tries to solve this problem by implementing the retry side effect
+and give the user different retry mechanism.
+
 ## Maven artifacts
 ```scala
 libraryDependencies += "com.github.hipjim" % "scala-retry_2.11" % "0.2.0"
