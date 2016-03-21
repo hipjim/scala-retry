@@ -59,3 +59,9 @@ val result = for {
 } yield x + y // result is Failure with java.lang.ArithmeticException: / by zero
 
 ```
+## Retry strategies
+### Fixed back off
+```scala
+val retryStrategy =
+    RetryStrategy.fixedBackOff(retryDuration = 3.seconds, maxAttempts = 5)
+```
