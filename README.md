@@ -60,8 +60,15 @@ val result = for {
 
 ```
 ## Retry strategies
-### Fixed back off
+
+#### Fixed back off
 ```scala
 val retryStrategy =
     RetryStrategy.fixedBackOff(retryDuration = 3.seconds, maxAttempts = 5)
+```
+
+#### Fixed back off
+```scala
+val retryStrategy =
+    RetryStrategy.fibonacciBackOff(initialWaitDuration = 3.seconds, maxAttempts = 5)
 ```
