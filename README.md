@@ -2,8 +2,6 @@ Scala Retry
 ===========
 
 [![Build Status](https://travis-ci.org/hipjim/scala-retry.svg?branch=master)](https://travis-ci.org/hipjim/scala-retry)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.11)
-
 
 Simple retry mechanism for arbitrary function calls in scala.
 
@@ -15,6 +13,9 @@ This minimalistic library tries to solve this problem by implementing the retry 
 and give the user different retry mechanism.
 
 ## Maven artifacts
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.11)
+
 ```scala
 libraryDependencies += "com.github.hipjim" % "scala-retry_2.11" % "0.2.0"
 ```
