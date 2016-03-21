@@ -91,4 +91,3 @@ val retryStrategy = RetryStrategy.noBackOff(maxAttempts = 10)
 ```scala
 val retryStrategy = RetryStrategy.noRetry
 ```
-    RetryStrategy.noRetry
