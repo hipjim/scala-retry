@@ -10,7 +10,7 @@ In such systems, transient errors can occur and interfere with the normal progra
 Transient faults are temporary abnormal conditions such as offline services, infrastructure faults, or network issues.
 It is common practice to retry transient faults using a retry loop mechanism.
 This minimalistic library tries to solve this problem by implementing the retry side effect
-and give the user different retry mechanism.
+and give the user different backoff strategies.
 
 ## Maven artifacts
 
