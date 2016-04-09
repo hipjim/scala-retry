@@ -3,6 +3,7 @@ package util.retry.blocking
 import java.util.Random
 
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.blocking
 
 /**
   * Interface defining a retry strategy
@@ -21,8 +22,6 @@ sealed trait RetryStrategy {
 
 /**
   * Simplest retry strategy that performs retry
-  *
-  * @param maxRetries the maximum number of retries
   */
 object NoRetry
   extends RetryStrategy {
@@ -92,7 +91,7 @@ class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxAttem
 
 sealed trait Sleep {
   def sleep(millis: Long) = try {
-    Thread.sleep(millis)
+    blocking(Thread.sleep(millis))
   } catch {
     case e: InterruptedException =>
       Thread.currentThread().interrupt()
