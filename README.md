@@ -3,14 +3,14 @@ Scala Retry
 
 [![Build Status](https://travis-ci.org/hipjim/scala-retry.svg?branch=master)](https://travis-ci.org/hipjim/scala-retry)
 
-Simple retry mechanism for arbitrary function calls in scala.
+######*Simple retry mechanism for arbitrary function calls in scala.*
 
 We live in times where software systems are built by small services that are talking to each other.
 In such systems, transient errors can occur and interfere with the normal program execution flow.
 Transient faults are temporary abnormal conditions such as offline services, infrastructure faults, or network issues.
 It is common practice to retry transient faults using a retry loop mechanism.
 This minimalistic library tries to solve this problem by implementing the retry side effect
-and give the user different retry mechanism.
+and give the user different backoff strategies.
 
 ## Maven artifacts
 
@@ -36,7 +36,7 @@ import util.retry.blocking.{RetryStrategy, Failure, Retry, Success}
 
 // define the retry strategy
 implicit val retryStrategy =
-    RetryStrategy.fixedBackOff(retryDuration = 1.seconds, retryAttempts = 2)
+    RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
 
 // pattern match the result
 val r = Retry(1 / 1) match {
@@ -58,4 +58,36 @@ val result = for {
   y <- Retry(1 / 1) // success
 } yield x + y // result is Failure with java.lang.ArithmeticException: / by zero
 
+```
+## Retry strategies
+
+#### Fixed backoff
+```scala
+val retryStrategy =
+    RetryStrategy.fixedBackOff(retryDuration = 3.seconds, maxAttempts = 5)
+```
+
+#### Fibonacci backoff
+```scala
+val retryStrategy =
+    RetryStrategy.fibonacciBackOff(initialWaitDuration = 3.seconds, maxAttempts = 5)
+```
+
+#### Random backoff
+```scala
+val retryStrategy =
+    RetryStrategy.randomBackOff(
+      minimumWaitDuration = 1.seconds, 
+      maximumWaitDuration = 10.seconds, 
+      maxAttempts = 10
+    )
+```
+
+#### No backoff
+```scala
+val retryStrategy = RetryStrategy.noBackOff(maxAttempts = 10)
+```    
+#### No retry
+```scala
+val retryStrategy = RetryStrategy.noRetry
 ```
