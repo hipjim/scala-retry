@@ -25,6 +25,7 @@ import scala.util.control.NonFatal
   * }}}
   */
 sealed trait Retry[+T] {
+
   /**
     * Returns `true` if the `Retry` is a `Failure` otherwise it returns `false`.
     */
@@ -54,8 +55,7 @@ sealed trait Retry[+T] {
   /**
     * Returns the computation value in case of a `Success`. Otherwise it is returning the provided default.
     */
-  def getOrElse[U >: T](default: => U): U =
-    if (isSuccess) get else default
+  def getOrElse[U >: T](default: => U): U = if (isSuccess) get else default
 
   /**
     * Applies the given function `f` if this is a `Success`, otherwise returns `Unit` if this is a `Failure`.
@@ -76,12 +76,14 @@ sealed trait Retry[+T] {
 final case class Success[+T](value: T) extends Retry[T] {
   override def isFailure: Boolean = false
   override def isSuccess: Boolean = true
-  override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] = this
+  override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] =
+    this
   override def get: T = value
   override def foreach[X](f: (T) => X): Unit = f(value)
   override def transform[X](f: (T) => X): X = f(value)
   override def flatMap[S](f: (T) => Retry[S]): Retry[S] = f(value)
-  override def map[S](f: (T) => S)(implicit strategy: RetryStrategy): Retry[S] = Retry(f(value))
+  override def map[S](f: (T) => S)(
+      implicit strategy: RetryStrategy): Retry[S] = Retry(f(value))
 }
 
 final case class Failure[+T](exception: Throwable) extends Retry[T] {
@@ -101,20 +103,20 @@ final case class Failure[+T](exception: Throwable) extends Retry[T] {
   override def foreach[X](f: (T) => X): Unit = ()
   override def transform[X](f: (T) => X): X = throw exception
   override def flatMap[S](f: (T) => Retry[S]): Retry[S] = Failure(exception)
-  override def map[S](f: (T) => S)(implicit strategy: RetryStrategy): Retry[S] = Failure(exception)
+  override def map[S](f: (T) => S)(
+      implicit strategy: RetryStrategy): Retry[S] = Failure(exception)
 }
-
 
 object Retry {
   def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
-      case x: scala.util.Success[T] =>
+      case x: scala.util.Success [T] =>
         println("Computation succeeded.")
         Success(x.value)
       case _ if strategy.shouldRetry() =>
         println("Computation failed. Retrying...")
         apply(fn)(strategy.update())
-      case f: scala.util.Failure[T] =>
+      case f: scala.util.Failure [T] =>
         println("Computation failed. Giving up...")
         Failure(f.exception)
     }

@@ -9,6 +9,7 @@ import scala.concurrent.blocking
   * Interface defining a retry strategy
   */
 sealed trait RetryStrategy {
+
   /**
     * Returns `true` if the retry should be performed
     */
@@ -23,15 +24,13 @@ sealed trait RetryStrategy {
 /**
   * Simplest retry strategy that performs retry
   */
-object NoRetry
-  extends RetryStrategy {
+object NoRetry extends RetryStrategy {
   override def shouldRetry(): Boolean = false
 
   override def update(): RetryStrategy = ???
 }
 
-class MaxNumberOfRetriesStrategy(val maxAttempts: Int)
-  extends RetryStrategy {
+class MaxNumberOfRetriesStrategy(val maxAttempts: Int) extends RetryStrategy {
   override def shouldRetry(): Boolean = maxAttempts > 0
 
   override def update(): RetryStrategy =
@@ -39,7 +38,7 @@ class MaxNumberOfRetriesStrategy(val maxAttempts: Int)
 }
 
 class FixedWaitRetryStrategy(val millis: Long, override val maxAttempts: Int)
-  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
+    extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
 
   override def update(): RetryStrategy = {
     sleep(millis)
@@ -47,24 +46,28 @@ class FixedWaitRetryStrategy(val millis: Long, override val maxAttempts: Int)
   }
 }
 
-class RandomWaitRetryStrategy(val minimumWaitTime: Long, val maximumWaitTime: Long, override val maxAttempts: Int)
-  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
+class RandomWaitRetryStrategy(val minimumWaitTime: Long,
+                              val maximumWaitTime: Long,
+                              override val maxAttempts: Int)
+    extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
 
   private[this] final val random: Random = new Random()
 
   override def update(): RetryStrategy = {
-    val millis: Long = math.abs(random.nextLong) % (maximumWaitTime - minimumWaitTime)
+    val millis: Long =
+      math.abs(random.nextLong) % (maximumWaitTime - minimumWaitTime)
     sleep(millis)
     new RandomWaitRetryStrategy(
-      minimumWaitTime,
-      maximumWaitTime,
-      maxAttempts - 1
+        minimumWaitTime,
+        maximumWaitTime,
+        maxAttempts - 1
     )
   }
 }
 
-class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxAttempts: Int)
-  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
+class FibonacciBackOffStrategy(
+    waitTime: Long, step: Long, override val maxAttempts: Int)
+    extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
   def fibonacci(n: Long) = {
     n match {
       case x@(0L | 1L) => x
@@ -90,33 +93,31 @@ class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxAttem
 }
 
 sealed trait Sleep {
-  def sleep(millis: Long) = try {
-    blocking(Thread.sleep(millis))
-  } catch {
-    case e: InterruptedException =>
-      Thread.currentThread().interrupt()
-      throw e
-  }
+  def sleep(millis: Long) =
+    try {
+      blocking(Thread.sleep(millis))
+    } catch {
+      case e: InterruptedException =>
+        Thread.currentThread().interrupt()
+        throw e
+    }
 }
 
 object RetryStrategy {
   val noRetry = NoRetry
 
-  def noBackOff(maxAttempts: Int) =
-    new MaxNumberOfRetriesStrategy(maxAttempts)
+  def noBackOff(maxAttempts: Int) = new MaxNumberOfRetriesStrategy(maxAttempts)
 
   def fixedBackOff(retryDuration: FiniteDuration, maxAttempts: Int) =
     new FixedWaitRetryStrategy(retryDuration.toMillis, maxAttempts)
 
-  def randomBackOff(minimumWaitDuration: FiniteDuration, maximumWaitDuration: FiniteDuration, maxAttempts: Int) =
-    new RandomWaitRetryStrategy(
-      minimumWaitDuration.toMillis,
-      maximumWaitDuration.toMillis,
-      maxAttempts)
+  def randomBackOff(minimumWaitDuration: FiniteDuration,
+                    maximumWaitDuration: FiniteDuration,
+                    maxAttempts: Int) =
+    new RandomWaitRetryStrategy(minimumWaitDuration.toMillis,
+                                maximumWaitDuration.toMillis,
+                                maxAttempts)
 
   def fibonacciBackOff(initialWaitDuration: FiniteDuration, maxAttempts: Int) =
-    new FibonacciBackOffStrategy(
-      initialWaitDuration.toMillis,
-      1,
-      maxAttempts)
+    new FibonacciBackOffStrategy(initialWaitDuration.toMillis, 1, maxAttempts)
 }
