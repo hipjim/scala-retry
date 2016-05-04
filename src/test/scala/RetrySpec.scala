@@ -22,9 +22,10 @@ trait AbstractRetrySpec extends FlatSpec with Matchers {
   }
 
   "A `Retry` " should "recover in case of a failure `Failure` " in {
-    val result = Retry(1 / 0) recover {
-      case _ => -1
-    }
+    val result =
+      Retry(1 / 0) recover {
+        case _ => -1
+      }
     result should be(Success(-1))
   }
 
@@ -57,11 +58,11 @@ class NoBackOffRetrySpec extends AbstractRetrySpec {
 }
 
 class FixedBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
+  val retryStrategy =
+    RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
 }
 
 class FibonacciBackOffRetrySpec extends AbstractRetrySpec {
   val retryStrategy = RetryStrategy.fibonacciBackOff(
-    initialWaitDuration = 1.seconds,
-    maxAttempts = 3)
+      initialWaitDuration = 1.seconds, maxAttempts = 3)
 }
