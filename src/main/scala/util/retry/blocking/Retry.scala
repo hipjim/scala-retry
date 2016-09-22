@@ -111,13 +111,10 @@ object Retry {
   def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
     Try(fn) match {
       case x: scala.util.Success [T] =>
-        println("Computation succeeded.")
         Success(x.value)
       case _ if strategy.shouldRetry() =>
-        println("Computation failed. Retrying...")
         apply(fn)(strategy.update())
       case f: scala.util.Failure [T] =>
-        println("Computation failed. Giving up...")
         Failure(f.exception)
     }
 }
