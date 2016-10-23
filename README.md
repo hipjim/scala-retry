@@ -17,14 +17,14 @@ and give the user different backoff strategies.
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.11)
 
 ```scala
-libraryDependencies += "com.github.hipjim" % "scala-retry_2.11" % "0.2.0"
+libraryDependencies += "com.github.hipjim" % "scala-retry_2.11" % "0.2.1"
 ```
 
 ```xml
 <dependency>
   <groupId>com.github.hipjim</groupId>
   <artifactId>scala-retry_2.11</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
 </dependency>
 ```
 
