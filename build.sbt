@@ -4,7 +4,7 @@ organization := "com.github.hipjim"
 
 crossScalaVersions := Seq("2.10.6", "2.11.7")
 
-version := "0.2.0"
+version := "0.2.1"
 
 scalaVersion := "2.11.8"
 
