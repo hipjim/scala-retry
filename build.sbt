@@ -2,11 +2,18 @@ name := "scala-retry"
 
 organization := "com.github.hipjim"
 
-crossScalaVersions := Seq("2.10.6", "2.11.7")
+crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.2")
 
-version := "0.2.1"
+version := "0.2.2"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.2"
+
+// Force building with Java 8
+initialize := {
+  val required = "1.8"
+  val current  = sys.props("java.specification.version")
+  assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
+}
 
 scalacOptions ++= Seq(
   "-target:jvm-1.6",
@@ -16,7 +23,6 @@ scalacOptions ++= Seq(
   "-unchecked",
   "-deprecation",
   "-feature",
-  "-Yinline-warnings",
   "-Ywarn-adapted-args",
   "-Ywarn-dead-code",
   "-Ywarn-inaccessible",
@@ -42,7 +48,7 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 )
 
 publishMavenStyle := true

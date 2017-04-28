@@ -68,7 +68,7 @@ class RandomWaitRetryStrategy(val minimumWaitTime: Long,
 class FibonacciBackOffStrategy(
     waitTime: Long, step: Long, override val maxAttempts: Int)
     extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
-  def fibonacci(n: Long) = {
+  def fibonacci(n: Long): Long = {
     n match {
       case x@(0L | 1L) => x
       case _ =>
@@ -76,7 +76,7 @@ class FibonacciBackOffStrategy(
         var prev: Long = 1L
         var result: Long = 0L
 
-        for (i <- 2L to n) {
+        for (_ <- 2L to n) {
           result = prev + prevPrev
           prevPrev = prev
           prev = result
@@ -93,7 +93,7 @@ class FibonacciBackOffStrategy(
 }
 
 sealed trait Sleep {
-  def sleep(millis: Long) =
+  def sleep(millis: Long): Unit =
     try {
       blocking(Thread.sleep(millis))
     } catch {

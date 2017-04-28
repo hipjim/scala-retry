@@ -1,5 +1,5 @@
 import org.scalatest._
-import util.retry.blocking.{Failure, Retry, RetryStrategy, Success}
+import util.retry.blocking._
 
 import scala.concurrent.duration._
 
@@ -16,7 +16,7 @@ trait AbstractRetrySpec extends FlatSpec with Matchers {
 
   "A `Retry` " should "return `Failure` in case of a failed operation" in {
     Retry(1 / 0) match {
-      case Failure(t) => () //OK
+      case Failure(_) => () //OK
       case Success(_) => fail("Should return failure but it returned success")
     }
   }
@@ -39,7 +39,7 @@ trait AbstractRetrySpec extends FlatSpec with Matchers {
       Retry(1 / 0).get
       fail("should not get here")
     } catch {
-      case e: ArithmeticException => ()
+      case _: ArithmeticException => ()
     }
   }
 
@@ -50,19 +50,19 @@ trait AbstractRetrySpec extends FlatSpec with Matchers {
 }
 
 class NoRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.noRetry
+  val retryStrategy: NoRetry.type = RetryStrategy.noRetry
 }
 
 class NoBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.noBackOff(maxAttempts = 3)
+  val retryStrategy: MaxNumberOfRetriesStrategy = RetryStrategy.noBackOff(maxAttempts = 3)
 }
 
 class FixedBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy =
+  val retryStrategy: FixedWaitRetryStrategy =
     RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
 }
 
 class FibonacciBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy = RetryStrategy.fibonacciBackOff(
+  val retryStrategy: FibonacciBackOffStrategy = RetryStrategy.fibonacciBackOff(
       initialWaitDuration = 1.seconds, maxAttempts = 3)
 }
