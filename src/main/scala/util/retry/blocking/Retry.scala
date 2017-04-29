@@ -19,8 +19,8 @@ import scala.util.control.NonFatal
   *  RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
   *
   * val r = Retry(1 / 1) match {
-  *   case Success(x) => println(x)
-  *   case Failure(t) => println(t)
+  *   case Success(x) => x
+  *   case Failure(t) => log("Exception occurred", t)
   * }
   * }}}
   */
