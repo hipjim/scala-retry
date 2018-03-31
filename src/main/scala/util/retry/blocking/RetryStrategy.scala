@@ -104,7 +104,7 @@ sealed trait Sleep {
 }
 
 object RetryStrategy {
-  val noRetry = NoRetry
+  val noRetry: NoRetry.type = NoRetry
 
   def noBackOff(maxAttempts: Int) = new MaxNumberOfRetriesStrategy(maxAttempts)
 
