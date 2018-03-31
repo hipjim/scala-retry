@@ -2,11 +2,11 @@ name := "scala-retry"
 
 organization := "com.github.hipjim"
 
-crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.2")
+crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.5")
 
 version := "0.2.2"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.5"
 
 // Force building with Java 8
 initialize := {

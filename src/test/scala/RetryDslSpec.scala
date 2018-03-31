@@ -18,5 +18,6 @@ class RetryDslSpec extends FlatSpec with Matchers {
     } yield x + y
 
     result should be(Success(2))
+
   }
 }
