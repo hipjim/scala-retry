@@ -2,11 +2,11 @@ name := "scala-retry"
 
 organization := "com.github.hipjim"
 
-crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.5")
+crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.6")
 
-version := "0.2.2"
+version := "0.2.3"
 
-scalaVersion := "2.12.5"
+scalaVersion := "2.12.6"
 
 // Force building with Java 8
 initialize := {
@@ -16,36 +16,39 @@ initialize := {
 }
 
 scalacOptions ++= Seq(
-  "-target:jvm-1.6",
-  // turns all warnings into errors ;-)
-  //"-Xfatal-warnings",
-  // possibly old/deprecated linter options
-  "-unchecked",
-  "-deprecation",
-  "-feature",
-  "-Ywarn-adapted-args",
-  "-Ywarn-dead-code",
+  // warnings
+  "-unchecked", // able additional warnings where generated code depends on assumptions
+  "-deprecation", // emit warning for usages of deprecated APIs
+  "-feature", // emit warning usages of features that should be imported explicitly
+  // Features enabled by default
+  "-language:higherKinds",
+  "-language:implicitConversions",
+  "-language:experimental.macros",
+  // possibly deprecated options
   "-Ywarn-inaccessible",
-  "-Ywarn-nullary-override",
-  "-Ywarn-nullary-unit",
-  "-Xlog-free-terms",
-  // enables linter options
-  "-Xlint:adapted-args", // warn if an argument list is modified to match the receiver
-  "-Xlint:nullary-unit", // warn when nullary methods return Unit
-  "-Xlint:inaccessible", // warn about inaccessible types in method signatures
-  "-Xlint:nullary-override", // warn when non-nullary `def f()' overrides nullary `def f'
-  "-Xlint:infer-any", // warn when a type argument is inferred to be `Any`
-  "-Xlint:-missing-interpolator", // disables missing interpolator warning
-  "-Xlint:doc-detached", // a ScalaDoc comment appears to be detached from its element
-  "-Xlint:private-shadow", // a private field (or class parameter) shadows a superclass field
-  "-Xlint:type-parameter-shadow", // a local type parameter shadows a type already in scope
-  "-Xlint:poly-implicit-overload", // parameterized overloaded implicit methods are not visible as view bounds
-  "-Xlint:option-implicit", // Option.apply used implicit view
-  "-Xlint:delayedinit-select", // Selecting member of DelayedInit
-  "-Xlint:by-name-right-associative", // By-name parameter of right associative operator
-  "-Xlint:package-object-classes", // Class or object defined in package object
-  "-Xlint:unsound-match" // Pattern match may not be typesafe
+  // absolutely necessary for Iterant
+  "-Ypartial-unification"
 )
+
+// Targeting Java 6, but only for Scala <= 2.11
+javacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+  case Some((2, majorVersion)) if majorVersion <= 11 =>
+    // generates code with the Java 6 class format
+    Seq("-source", "1.6", "-target", "1.6")
+  case _ =>
+    // For 2.12 we are targeting the Java 8 class format
+    Seq("-source", "1.8", "-target", "1.8")
+})
+
+// Targeting Java 6, but only for Scala <= 2.11
+scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+  case Some((2, majorVersion)) if majorVersion <= 11 =>
+    // generates code with the Java 6 class format
+    Seq("-target:jvm-1.6")
+  case _ =>
+    // For 2.12 we are targeting the Java 8 class format
+    Seq.empty
+})
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.1" % "test"
