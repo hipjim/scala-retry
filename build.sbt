@@ -6,7 +6,7 @@ crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.6")
 
 version := "0.2.3"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.7"
 
 // Force building with Java 8
 initialize := {
