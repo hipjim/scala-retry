@@ -4,7 +4,7 @@ organization := "com.github.hipjim"
 
 crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.7")
 
-version := "0.2.3"
+version := "0.2.4"
 
 scalaVersion := "2.12.7"
 
@@ -23,11 +23,7 @@ scalacOptions ++= Seq(
   // Features enabled by default
   "-language:higherKinds",
   "-language:implicitConversions",
-  "-language:experimental.macros",
-  // possibly deprecated options
-  "-Ywarn-inaccessible",
-  // absolutely necessary for Iterant
-  "-Ypartial-unification"
+  "-language:experimental.macros"  
 )
 
 // Targeting Java 6, but only for Scala <= 2.11
