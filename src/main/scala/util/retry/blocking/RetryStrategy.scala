@@ -37,6 +37,13 @@ class MaxNumberOfRetriesStrategy(val maxAttempts: Int) extends RetryStrategy {
     new MaxNumberOfRetriesStrategy(maxAttempts = maxAttempts - 1)
 }
 
+class RetryForever(val waitTime: Int) extends RetryStrategy {
+  override def shouldRetry(): Boolean = true
+
+  override def update(): RetryStrategy =
+    new RetryForever(waitTime)
+}
+
 class FixedWaitRetryStrategy(val millis: Long, override val maxAttempts: Int)
     extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
 
@@ -107,6 +114,8 @@ object RetryStrategy {
   val noRetry: NoRetry.type = NoRetry
 
   def noBackOff(maxAttempts: Int) = new MaxNumberOfRetriesStrategy(maxAttempts)
+
+  def forever(waitTime: Int) = new RetryForever(waitTime)
 
   def fixedBackOff(retryDuration: FiniteDuration, maxAttempts: Int) =
     new FixedWaitRetryStrategy(retryDuration.toMillis, maxAttempts)
