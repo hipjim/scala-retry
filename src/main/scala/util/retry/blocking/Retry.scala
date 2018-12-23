@@ -2,7 +2,6 @@ package util.retry.blocking
 
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 import scala.util.control.NonFatal
 
@@ -107,18 +106,20 @@ final case class Failure[+T](exception: Throwable) extends Retry[T] {
   override def transform[X](f: T => X): X = throw exception
   override def flatMap[S](f: T => Retry[S]): Retry[S] = Failure(exception)
   override def map[S](f: T => S)(
-      implicit strategy: () => RetryStrategy): Retry[S] = Failure(exception)
+      implicit strategy: RetryStrategyProducer): Retry[S] = Failure(exception)
 }
 
 object Retry {
-  def apply[T](fn: => T)(implicit strategy: () => RetryStrategy): Retry[T] = {
+  def apply[T](fn: => T)(implicit strategy: RetryStrategyProducer): Retry[T] = {
     def go(fn: => T)(strategy: RetryStrategy): Retry[T] = {
       Try(fn) match {
         case x: scala.util.Success[T] =>
           Success(x.value)
         case _ if strategy.shouldRetry() =>
+          println("retrying")
           go(fn)(strategy.update())
         case f: scala.util.Failure[T] =>
+          println("giving up")
           Failure(f.exception)
       }
     }
