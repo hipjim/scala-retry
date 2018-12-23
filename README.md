@@ -28,7 +28,7 @@ libraryDependencies += "com.github.hipjim" % "scala-retry_2.12" % "0.2.4"
 </dependency>
 ```
 
-Versions for ```Scala 2.11``` and ```Scala 2.12``` are available.
+Versions for ```Scala 2.11``` and ```Scala 2.10``` are available.
 
 ## Tutorial
 
