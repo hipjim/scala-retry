@@ -1,4 +1,5 @@
 import org.scalatest.{FlatSpec, Matchers}
+import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 import util.retry.blocking._
 
 import scala.concurrent.duration._
@@ -8,7 +9,7 @@ import scala.concurrent.duration._
   */
 class RetryDslSpec extends FlatSpec with Matchers {
 
-  implicit val retryStrategy: FixedWaitRetryStrategy =
+  implicit val retryStrategy: RetryStrategyProducer =
     RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
 
   "A `Retry` " should "be used in for comprehensions" in {
@@ -18,6 +19,6 @@ class RetryDslSpec extends FlatSpec with Matchers {
     } yield x + y
 
     result should be(Success(2))
-
   }
+
 }

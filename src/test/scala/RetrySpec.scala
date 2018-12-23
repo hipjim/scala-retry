@@ -1,4 +1,5 @@
 import org.scalatest._
+import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 import util.retry.blocking._
 
 import scala.concurrent.duration._
@@ -8,7 +9,7 @@ import scala.concurrent.duration._
   */
 trait AbstractRetrySpec extends FlatSpec with Matchers {
 
-  implicit val retryStrategy: RetryStrategy
+  implicit val retryStrategy: () => RetryStrategy
 
   "A `Retry` " should "return `Success` in case of a successful operation" in {
     Retry(1 / 1) should be(Success(1))
@@ -50,19 +51,19 @@ trait AbstractRetrySpec extends FlatSpec with Matchers {
 }
 
 class NoRetrySpec extends AbstractRetrySpec {
-  val retryStrategy: NoRetry.type = RetryStrategy.noRetry
+  val retryStrategy:RetryStrategyProducer = RetryStrategy.noRetry
 }
 
 class NoBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy: MaxNumberOfRetriesStrategy = RetryStrategy.noBackOff(maxAttempts = 3)
+  val retryStrategy: RetryStrategyProducer = RetryStrategy.noBackOff(maxAttempts = 3)
 }
 
 class FixedBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy: FixedWaitRetryStrategy =
+  val retryStrategy: RetryStrategyProducer =
     RetryStrategy.fixedBackOff(retryDuration = 1.seconds, maxAttempts = 2)
 }
 
 class FibonacciBackOffRetrySpec extends AbstractRetrySpec {
-  val retryStrategy: FibonacciBackOffStrategy = RetryStrategy.fibonacciBackOff(
+  val retryStrategy: RetryStrategyProducer = RetryStrategy.fibonacciBackOff(
       initialWaitDuration = 1.seconds, maxAttempts = 3)
 }

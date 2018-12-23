@@ -111,22 +111,27 @@ sealed trait Sleep {
 }
 
 object RetryStrategy {
-  val noRetry: NoRetry.type = NoRetry
 
-  def noBackOff(maxAttempts: Int) = new MaxNumberOfRetriesStrategy(maxAttempts)
+  type RetryStrategyProducer = () => RetryStrategy
 
-  def forever(waitTime: Int) = new RetryForever(waitTime)
+  val noRetry: RetryStrategyProducer = () => NoRetry
 
-  def fixedBackOff(retryDuration: FiniteDuration, maxAttempts: Int) =
-    new FixedWaitRetryStrategy(retryDuration.toMillis, maxAttempts)
+  def noBackOff(maxAttempts: Int): RetryStrategyProducer =
+    () => new MaxNumberOfRetriesStrategy(maxAttempts)
+
+  def forever(waitTime: Int): RetryStrategyProducer =
+    () => new RetryForever(waitTime)
+
+  def fixedBackOff(retryDuration: FiniteDuration, maxAttempts: Int): RetryStrategyProducer =
+    () => new FixedWaitRetryStrategy(retryDuration.toMillis, maxAttempts)
 
   def randomBackOff(minimumWaitDuration: FiniteDuration,
                     maximumWaitDuration: FiniteDuration,
-                    maxAttempts: Int) =
-    new RandomWaitRetryStrategy(minimumWaitDuration.toMillis,
+                    maxAttempts: Int):RetryStrategyProducer =
+    () => new RandomWaitRetryStrategy(minimumWaitDuration.toMillis,
                                 maximumWaitDuration.toMillis,
                                 maxAttempts)
 
-  def fibonacciBackOff(initialWaitDuration: FiniteDuration, maxAttempts: Int) =
-    new FibonacciBackOffStrategy(initialWaitDuration.toMillis, 1, maxAttempts)
+  def fibonacciBackOff(initialWaitDuration: FiniteDuration, maxAttempts: Int): RetryStrategyProducer =
+    () => new FibonacciBackOffStrategy(initialWaitDuration.toMillis, 1, maxAttempts)
 }

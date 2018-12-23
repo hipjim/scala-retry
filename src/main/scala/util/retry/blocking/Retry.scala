@@ -1,5 +1,8 @@
 package util.retry.blocking
 
+import util.retry.blocking.RetryStrategy.RetryStrategyProducer
+
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 import scala.util.control.NonFatal
 
@@ -34,7 +37,7 @@ sealed trait Retry[+T] {
   /**
     * Maps the given function to the value from this `Success` or returns this if this is a `Failure`.
     */
-  def map[S](f: T => S)(implicit strategy: RetryStrategy): Retry[S]
+  def map[S](f: T => S)(implicit strategy: RetryStrategyProducer): Retry[S]
 
   /**
     * Returns `true` if the `Retry` is a `Failure` otherwise it returns `false`.
@@ -79,11 +82,11 @@ final case class Success[+T](value: T) extends Retry[T] {
   override def recover[X >: T](f: PartialFunction[Throwable, X]): Retry[X] =
     this
   override def get: T = value
-  override def foreach[X](f: (T) => X): Unit = f(value)
-  override def transform[X](f: (T) => X): X = f(value)
-  override def flatMap[S](f: (T) => Retry[S]): Retry[S] = f(value)
-  override def map[S](f: (T) => S)(
-      implicit strategy: RetryStrategy): Retry[S] = Retry(f(value))
+  override def foreach[X](f: T => X): Unit = f(value)
+  override def transform[X](f: T => X): X = f(value)
+  override def flatMap[S](f: T => Retry[S]): Retry[S] = f(value)
+  override def map[S](f: T => S)(
+      implicit strategy: RetryStrategyProducer): Retry[S] = Retry(f(value))
 }
 
 final case class Failure[+T](exception: Throwable) extends Retry[T] {
@@ -100,21 +103,26 @@ final case class Failure[+T](exception: Throwable) extends Retry[T] {
   }
 
   override def get: T = throw exception
-  override def foreach[X](f: (T) => X): Unit = ()
-  override def transform[X](f: (T) => X): X = throw exception
-  override def flatMap[S](f: (T) => Retry[S]): Retry[S] = Failure(exception)
-  override def map[S](f: (T) => S)(
-      implicit strategy: RetryStrategy): Retry[S] = Failure(exception)
+  override def foreach[X](f: T => X): Unit = ()
+  override def transform[X](f: T => X): X = throw exception
+  override def flatMap[S](f: T => Retry[S]): Retry[S] = Failure(exception)
+  override def map[S](f: T => S)(
+      implicit strategy: () => RetryStrategy): Retry[S] = Failure(exception)
 }
 
 object Retry {
-  def apply[T](fn: => T)(implicit strategy: RetryStrategy): Retry[T] =
-    Try(fn) match {
-      case x: scala.util.Success [T] =>
-        Success(x.value)
-      case _ if strategy.shouldRetry() =>
-        apply(fn)(strategy.update())
-      case f: scala.util.Failure [T] =>
-        Failure(f.exception)
+  def apply[T](fn: => T)(implicit strategy: () => RetryStrategy): Retry[T] = {
+    def go(fn: => T)(strategy: RetryStrategy): Retry[T] = {
+      Try(fn) match {
+        case x: scala.util.Success[T] =>
+          Success(x.value)
+        case _ if strategy.shouldRetry() =>
+          go(fn)(strategy.update())
+        case f: scala.util.Failure[T] =>
+          Failure(f.exception)
+      }
     }
+
+    go(fn)(strategy())
+  }
 }
