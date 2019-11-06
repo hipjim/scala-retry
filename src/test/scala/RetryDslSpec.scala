@@ -2,6 +2,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 import util.retry.blocking._
 
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
 /**
@@ -17,6 +18,9 @@ class RetryDslSpec extends FlatSpec with Matchers {
       x <- Retry(1 / 1)
       y <- Retry(1 / 1)
     } yield x + y
+
+    implicit val ec = ExecutionContext.global
+    Retry(Future(1))
 
     result should be(Success(2))
   }
