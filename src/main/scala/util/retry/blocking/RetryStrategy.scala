@@ -9,7 +9,6 @@ import scala.concurrent.blocking
   * Interface defining a retry strategy
   */
 sealed trait RetryStrategy {
-
   /**
     * Returns `true` if the retry should be performed
     */
@@ -45,19 +44,15 @@ class RetryForever(val waitTime: Int) extends RetryStrategy {
 }
 
 class FixedWaitRetryStrategy(val millis: Long, override val maxAttempts: Int)
-    extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
-
+  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
   override def update(): RetryStrategy = {
     sleep(millis)
     new FixedWaitRetryStrategy(millis, maxAttempts - 1)
   }
 }
 
-class RandomWaitRetryStrategy(val minimumWaitTime: Long,
-                              val maximumWaitTime: Long,
-                              override val maxAttempts: Int)
-    extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
-
+class RandomWaitRetryStrategy(val minimumWaitTime: Long, val maximumWaitTime: Long, override val maxAttempts: Int)
+  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
   private[this] final val random: Random = new Random()
 
   override def update(): RetryStrategy = {
@@ -65,19 +60,18 @@ class RandomWaitRetryStrategy(val minimumWaitTime: Long,
       math.abs(random.nextLong) % (maximumWaitTime - minimumWaitTime)
     sleep(millis)
     new RandomWaitRetryStrategy(
-        minimumWaitTime,
-        maximumWaitTime,
-        maxAttempts - 1
+      minimumWaitTime,
+      maximumWaitTime,
+      maxAttempts - 1
     )
   }
 }
 
-class FibonacciBackOffStrategy(
-    waitTime: Long, step: Long, override val maxAttempts: Int)
-    extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
+class FibonacciBackOffStrategy(waitTime: Long, step: Long, override val maxAttempts: Int)
+  extends MaxNumberOfRetriesStrategy(maxAttempts) with Sleep {
   def fibonacci(n: Long): Long = {
     n match {
-      case x@(0L | 1L) => x
+      case x @ (0L | 1L) => x
       case _ =>
         var prevPrev: Long = 0L
         var prev: Long = 1L
@@ -111,7 +105,6 @@ sealed trait Sleep {
 }
 
 object RetryStrategy {
-
   type RetryStrategyProducer = () => RetryStrategy
 
   val noRetry: RetryStrategyProducer = () => NoRetry
@@ -125,12 +118,11 @@ object RetryStrategy {
   def fixedBackOff(retryDuration: FiniteDuration, maxAttempts: Int): RetryStrategyProducer =
     () => new FixedWaitRetryStrategy(retryDuration.toMillis, maxAttempts)
 
-  def randomBackOff(minimumWaitDuration: FiniteDuration,
-                    maximumWaitDuration: FiniteDuration,
-                    maxAttempts: Int):RetryStrategyProducer =
-    () => new RandomWaitRetryStrategy(minimumWaitDuration.toMillis,
-                                maximumWaitDuration.toMillis,
-                                maxAttempts)
+  def randomBackOff(
+    minimumWaitDuration: FiniteDuration,
+    maximumWaitDuration: FiniteDuration,
+    maxAttempts: Int): RetryStrategyProducer =
+    () => new RandomWaitRetryStrategy(minimumWaitDuration.toMillis, maximumWaitDuration.toMillis, maxAttempts)
 
   def fibonacciBackOff(initialWaitDuration: FiniteDuration, maxAttempts: Int): RetryStrategyProducer =
     () => new FibonacciBackOffStrategy(initialWaitDuration.toMillis, 1, maxAttempts)
