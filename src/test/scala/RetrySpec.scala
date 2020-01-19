@@ -3,11 +3,13 @@ import util.retry.blocking.RetryStrategy.RetryStrategyProducer
 import util.retry.blocking._
 
 import scala.concurrent.duration._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
   * Created by dev on 7/2/14.
   */
-trait AbstractRetrySpec extends FlatSpec with Matchers {
+trait AbstractRetrySpec extends AnyFlatSpec with Matchers {
 
   implicit val retryStrategy: () => RetryStrategy
 
