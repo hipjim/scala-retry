@@ -1,10 +1,47 @@
 language: scala
 sudo: false
+dist: trusty
+group: edge
 
-scala:
-  - 2.12.8
-  - 2.11.10
-  - 2.10.6
+matrix:
+  include:
+    # Scala 2.11, JVM
+    - jdk: oraclejdk8
+      scala: 2.11.12
+      env: COMMAND=ci-jvm-mima
+    # Scala 2.11, JVM, JDK 11
+    - jdk: openjdk11
+      scala: 2.11.12
+      env: COMMAND=ci-jvm
+    # Scala 2.11, JavaScript
+    - jdk: oraclejdk8
+      scala: 2.11.12
+      env: COMMAND=ci-js
+    # Scala 2.12, JVM
+    - jdk: oraclejdk8
+      scala: 2.12.10
+      env: COMMAND=ci-jvm-all
+    # Scala 2.12, JVM, JDK 11
+    - jdk: openjdk11
+      scala: 2.12.10
+      env: COMMAND=ci-jvm
+    # Scala 2.12, JavaScript
+    - jdk: oraclejdk8
+      scala: 2.12.10
+      env: COMMAND=ci-js
+    # Scala 2.13, JVM
+    - jdk: oraclejdk8
+      scala: 2.13.1
+      env: COMMAND=ci-jvm
+    # Scala 2.13, JVM, JDK 11
+    - jdk: openjdk11
+      scala: 2.13.1
+      env: COMMAND=ci-jvm
+    # Scala 2.13, JavaScript
+    - jdk: oraclejdk8
+      scala: 2.13.1
+      env: COMMAND=ci-js
+
 jdk:
   - oraclejdk8
 
