@@ -29,8 +29,8 @@ import scala.util.control.NonFatal
   */
 sealed trait Retry[+T] {
   /**
-    * Returns `true` if the `Retry` is a `Failure` otherwise it returns `false`.
-    */
+   * Returns the result by mapping f to the current value of Success or a Failure if the result is Failure
+   */
   def flatMap[S](f: T => Retry[S]): Retry[S]
 
   /**
