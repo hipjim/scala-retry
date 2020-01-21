@@ -37,10 +37,6 @@ matrix:
     - jdk: openjdk11
       scala: 2.13.1
       env: COMMAND=ci-jvm
-    # Scala 2.13, JavaScript
-    - jdk: oraclejdk8
-      scala: 2.13.1
-      env: COMMAND=ci-js
 
 jdk:
   - oraclejdk8

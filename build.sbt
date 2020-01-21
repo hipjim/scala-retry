@@ -8,13 +8,6 @@ version := "0.3.0"
 
 scalaVersion := "2.13.1"
 
-// Force building with Java 8
-initialize := {
-  val required = "1.8"
-  val current  = sys.props("java.specification.version")
-  assert(current == required, s"Unsupported build JDK: java.specification.version $current != $required")
-}
-
 scalacOptions ++= Seq(
   // warnings
   "-unchecked", // able additional warnings where generated code depends on assumptions
