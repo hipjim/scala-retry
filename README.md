@@ -14,21 +14,26 @@ and give the user different backoff strategies.
 
 ## Maven artifacts
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.12)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.hipjim/scala-retry_2.13)
 
 ```scala
-libraryDependencies += "com.github.hipjim" % "scala-retry_2.12" % "0.3.0"
+libraryDependencies += "com.github.hipjim" %% "scala-retry" % "0.4.0"
 ```
+
+```groovy
+compile group: 'com.github.hipjim', name: 'scala-retry_2.13', version: '0.4.0'
+```
+
 
 ```xml
 <dependency>
   <groupId>com.github.hipjim</groupId>
-  <artifactId>scala-retry_2.12</artifactId>
-  <version>0.3.0</version>
+  <artifactId>scala-retry_2.13</artifactId>
+  <version>0.4.0</version>
 </dependency>
 ```
 
-Versions for ```Scala 2.11``` and ```Scala 2.10``` are available.
+Versions for ```Scala 2.12```, ```Scala 2.11``` and ```Scala 2.10``` are available.
 
 ## Tutorial
 
