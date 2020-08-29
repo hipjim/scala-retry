@@ -40,7 +40,7 @@ scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
 })
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.1.3" % "test"
+  "org.scalatest" %% "scalatest" % "3.2.2" % "test"
 )
 
 publishMavenStyle := true
