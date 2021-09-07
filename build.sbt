@@ -2,11 +2,11 @@ name := "scala-retry"
 
 organization := "com.github.hipjim"
 
-crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.14","2.13.1")
+crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.10","2.13.6", "3.0.2")
 
 version := "0.5.0-SNAPSHOT"
 
-scalaVersion := "2.13.1"
+scalaVersion := "2.13.6"
 
 scalacOptions ++= Seq(
   // warnings
