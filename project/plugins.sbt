@@ -1,3 +1,3 @@
-addSbtPlugin("com.jsuereth"  % "sbt-pgp"         % "2.0.1")
-addSbtPlugin("org.scalameta" % "sbt-scalafmt"    % "2.2.1")
+addSbtPlugin("com.github.sbt"  % "sbt-pgp"         % "2.1.2")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt"    % "2.3.2")
 
