@@ -2,11 +2,11 @@ name := "scala-retry"
 
 organization := "com.github.hipjim"
 
-crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.15","2.13.6", "3.0.2")
+crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.10","2.13.7", "3.0.2")
 
 version := "0.5.0-SNAPSHOT"
 
-scalaVersion := "2.13.6"
+scalaVersion := "2.13.7"
 
 scalacOptions ++= Seq(
   // warnings
@@ -40,7 +40,7 @@ scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
 })
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.2.7" % "test"
+  "org.scalatest" %% "scalatest" % "3.2.9" % "test"
 )
 
 publishMavenStyle := true
