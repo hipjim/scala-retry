@@ -2,7 +2,7 @@ name := "scala-retry"
 
 organization := "com.github.hipjim"
 
-crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.15","2.13.14", "3.0.2")
+crossScalaVersions := Seq("2.10.6", "2.11.10", "2.12.20","2.13.14", "3.0.2")
 
 version := "0.5.0-SNAPSHOT"
 
